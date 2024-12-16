@@ -36,6 +36,37 @@ namespace UmbralMithrix
       On.RoR2.CharacterBody.AddTimedBuff_BuffDef_float += AddTimedBuff_BuffDef_float;
       On.EntityStates.Destructible.TimeCrystalDeath.OnEnter += RemoveUmbralImmune;
       On.RoR2.ItemStealController.BrotherItemFilter += ItemStealController_BrotherItemFilter;
+      IL.RoR2.TetherVfxOrigin.AddTether += TetherVfxOrigin_AddTether;
+    }
+
+    static void TetherVfxOrigin_AddTether(ILContext il)
+    {
+      ILCursor c = new ILCursor(il);
+      
+      if (!c.TryGotoNext(MoveType.After, x => x.MatchLdfld<TetherVfxOrigin>(nameof(TetherVfxOrigin.onTetherAdded))))
+      {
+        Debug.LogError("[TetherVfxOrigin_AddTether] Failed to find onTetherAdded field load");
+        return;
+      }
+      
+      c.Emit(OpCodes.Dup);
+      
+      ILLabel skipInvokeLabel = c.DefineLabel();
+      c.Emit(OpCodes.Brfalse, skipInvokeLabel);
+      
+      if (!c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt<TetherVfxOrigin.TetherAddDelegate>("Invoke")))
+      {
+        Debug.LogError("[TetherVfxOrigin_AddTether] Failed to find onTetherAdded Invoke call");
+        return;
+      }
+      
+      ILLabel skipPopLabel = c.DefineLabel();
+      c.Emit(OpCodes.Br, skipPopLabel);
+      
+      c.Emit(OpCodes.Pop);
+      skipInvokeLabel.Target = c.Prev;
+      
+      c.MarkLabel(skipPopLabel);
     }
 
     private bool ItemStealController_BrotherItemFilter(

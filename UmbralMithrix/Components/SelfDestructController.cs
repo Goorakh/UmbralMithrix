@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 namespace UmbralMithrix
 {
@@ -15,6 +15,5 @@ namespace UmbralMithrix
             yield return new WaitForSeconds(ModConfig.CrushingLeap.Value);
             Destroy(gameObject);
         }
-
     }
 }

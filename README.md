@@ -2,6 +2,8 @@
 
 **_SUBMIT ANY ISSUES FOUND WITH A LOG TO THE LINK ABOVE_**
 
+This is a reupload of the [original Umbral Mithrix](https://thunderstore.io/package/Nuxlar/UmbralMithrix/) (made with permission) that fixes the mod for the SotS Items & Elites patch.
+
 Major reworks to the fight, a new trophy item, and a practice mode. When you spawn on the moon there'll be a shrine to optionally activate the mode. You only need to interact with it once even if you're using LunarApostles. When completing the fight you'll get a trophy item to track your victories against Umbral.
 
 ### Practice Mode
@@ -14,16 +16,11 @@ You can edit config values in-game and during runs through Settings -> Mod Optio
 
 ## Credits
 
+- Nuxlar for making the actual mod
 - Race for ideas, feedback, testing, and writing the trophy item's logbook entry
 - breadguy for the trophy item idea
 - Everyone else who gave feedback, ideas, and bug reports
 
 ## Downpatch Versions
 
-**2.3.4**
-
-- Downpatched Umbral version without P4
-
-**2.2.1**
-
-- Downpatched Umbral version that Race uses
+Go [here](https://thunderstore.io/package/Nuxlar/UmbralMithrix/) for info and downloads of downpatch versions

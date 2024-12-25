@@ -17,6 +17,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{AE9C995E-28D5-4D3A-9368-C733E84E328C}"
 	ProjectSection(SolutionItems) = preProject
 		lang\en\CharacterBodies.txt = lang\en\CharacterBodies.txt
+		lang\en\Chat.txt = lang\en\Chat.txt
 		lang\en\Interactables.txt = lang\en\Interactables.txt
 		lang\en\Items.txt = lang\en\Items.txt
 	EndProjectSection

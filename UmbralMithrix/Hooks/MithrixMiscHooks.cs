@@ -278,9 +278,9 @@ namespace UmbralMithrix
 
             if (killedAllies)
             {
-                Chat.SendBroadcastChat(new Chat.SimpleChatMessage()
+                Chat.SendBroadcastChat(new Chat.SimpleChatMessage
                 {
-                    baseToken = "<color=#c6d5ff><size=120%>Mithrix: Perish.</color></size>"
+                    baseToken = "UMBRAL_KILLED_ALL_ALLIES_MESAAGE"
                 });
             }
 

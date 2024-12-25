@@ -17,11 +17,16 @@ using UnityEngine.Networking;
 
 namespace UmbralMithrix
 {
-    [BepInPlugin("com.Nuxlar.UmbralMithrix", "UmbralMithrix", "2.5.2")]
+    [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID)]
     [BepInDependency(PrefabAPI.PluginGUID)]
     public class UmbralMithrix : BaseUnityPlugin
     {
+        public const string PluginGUID = "com." + PluginAuthor + "." + PluginName;
+        public const string PluginAuthor = "Nuxlar";
+        public const string PluginName = "UmbralMithrix";
+        public const string PluginVersion = "2.5.2";
+
         public static bool practiceModeEnabled;
         public static bool hasfired;
         public static bool spawnedClone = false;
@@ -168,10 +173,10 @@ namespace UmbralMithrix
                 if (rangeIndicatorRenderer)
                 {
                     rangeIndicatorRenderer.sharedMaterials = [
-                preBossMat,
-                arenaWallMat,
-                stealAuraMat
-            ];
+                        preBossMat,
+                        arenaWallMat,
+                        stealAuraMat
+                    ];
                 }
             }
 
@@ -200,7 +205,7 @@ namespace UmbralMithrix
 
                 Transform rocks = finalAreaHolder.transform.Find("Rocks");
                 if (rocks)
-            {
+                {
                     rocks.gameObject.SetActive(false);
                 }
 

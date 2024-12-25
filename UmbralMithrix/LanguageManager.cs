@@ -17,7 +17,7 @@ namespace UmbralMithrix
             }
             else
             {
-                Debug.LogError($"Lang folder not found: {langFolderPath}");
+                Log.Error($"Lang folder not found: {langFolderPath}");
             }
         }
     }

@@ -111,6 +111,8 @@ namespace UmbralMithrix
 
         public void Awake()
         {
+            Log.Init(Logger);
+
             leapIndicatorPrefab.AddComponent<NetworkIdentity>();
             mithrixMaster.GetComponents<AISkillDriver>().Where(x => x.customName == "CastUlt").First().requiredSkill = null;
             //  mithrixMaster.GetComponents<AISkillDriver>().Where(x => x.customName == "Sprint after Target").First().minDistance = 25f;

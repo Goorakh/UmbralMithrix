@@ -45,7 +45,7 @@ namespace UmbralMithrix
 
             if (!c.TryGotoNext(MoveType.After, x => x.MatchLdfld<TetherVfxOrigin>(nameof(TetherVfxOrigin.onTetherAdded))))
             {
-                Debug.LogError("[TetherVfxOrigin_AddTether] Failed to find onTetherAdded field load");
+                Log.Error("Failed to find onTetherAdded field load");
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace UmbralMithrix
 
             if (!c.TryGotoNext(MoveType.After, x => x.MatchCallOrCallvirt<TetherVfxOrigin.TetherAddDelegate>("Invoke")))
             {
-                Debug.LogError("[TetherVfxOrigin_AddTether] Failed to find onTetherAdded Invoke call");
+                Log.Error("Failed to find onTetherAdded Invoke call");
                 return;
             }
 
@@ -78,7 +78,6 @@ namespace UmbralMithrix
         {
             if (PhaseCounter.instance && (PhaseCounter.instance.phase == 2 || PhaseCounter.instance.phase == 3))
             {
-                Debug.LogWarning(TimeCrystalDeath.explosionForce);
                 TimeCrystalDeath.explosionDamageCoefficient = 0f;
                 TimeCrystalDeath.explosionForce = 0f;
                 GameObject gameObject = PhaseCounter.instance.phase == 2 ? GameObject.Find("BrotherBody(Clone)") : GameObject.Find("BrotherHurtBodyP3(Clone)");

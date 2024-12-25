@@ -29,8 +29,8 @@ namespace UmbralMithrix
             On.RoR2.PurchaseInteraction.OnInteractionBegin += PurchaseInteraction_OnInteractionBegin;
             On.RoR2.CombatDirector.OnEnable += CombatDirector_OnEnable;
             On.RoR2.HealthComponent.TakeDamage += HealthComponent_TakeDamage;
-            On.RoR2.Stage.Start += Stage_Start;
-            On.RoR2.Run.Start += Run_Start;
+            SceneCatalog.onMostRecentSceneDefChanged += onMostRecentSceneDefChanged;
+            Run.onRunStartGlobal += onRunStartGlobal;
             On.RoR2.CharacterMaster.OnBodyStart += CharacterMaster_OnBodyStart;
             On.EntityStates.FrozenState.OnEnter += FrozenState_OnEnter;
             On.RoR2.CharacterBody.AddTimedBuff_BuffDef_float += AddTimedBuff_BuffDef_float;
@@ -368,16 +368,14 @@ namespace UmbralMithrix
             }
         }
 
-        private void Run_Start(On.RoR2.Run.orig_Start orig, Run self)
+        static void onRunStartGlobal(Run run)
         {
             UmbralMithrix.practiceModeEnabled = false;
-            orig(self);
         }
 
-        private IEnumerator Stage_Start(On.RoR2.Stage.orig_Start orig, Stage self)
+        static void onMostRecentSceneDefChanged(SceneDef sceneDef)
         {
-            yield return orig(self);
-            if (self.sceneDef.cachedName == "moon2")
+            if (sceneDef.cachedName == "moon2")
             {
                 UmbralMithrix.ArenaSetup();
                 UmbralMithrix.SpawnPracticeModeShrine();

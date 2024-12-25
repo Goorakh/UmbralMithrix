@@ -19,7 +19,6 @@ namespace UmbralMithrix
 {
     [BepInPlugin("com.Nuxlar.UmbralMithrix", "UmbralMithrix", "2.5.2")]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID)]
-    [BepInDependency(LanguageAPI.PluginGUID)]
     [BepInDependency(PrefabAPI.PluginGUID)]
     public class UmbralMithrix : BaseUnityPlugin
     {
@@ -145,6 +144,8 @@ namespace UmbralMithrix
             PrimaryHooks primaryHooks = new PrimaryHooks();
             MissionHooks missionHooks = new MissionHooks();
             MithrixMiscHooks mithrixMiscHooks = new MithrixMiscHooks();
+
+            LanguageManager.Register(System.IO.Path.GetDirectoryName(Info.Location));
         }
 
         private void P4DeathOrbSetup()
@@ -200,7 +201,7 @@ namespace UmbralMithrix
         {
             GameObject gameObject1 = Instantiate(youngTeleporter, new Vector3(1090.1f, -283.1f, 1138.6f), Quaternion.identity);
             GameObject gameObject2 = Instantiate(practiceFire.gameObject, new Vector3(1090.1f, -283.1f, 1138.6f), Quaternion.identity);
-            gameObject1.GetComponent<PurchaseInteraction>().NetworkcontextToken = "Enable Practice Mode? (respawn on death)";
+            gameObject1.GetComponent<PurchaseInteraction>().NetworkcontextToken = "UMBRAL_PRACTICE_MODE_CONTEXT";
             gameObject1.name = "PracticeModeShrine";
             gameObject2.transform.parent = gameObject1.transform;
             gameObject1.transform.GetChild(1).localPosition = new Vector3(0.0f, 0.0f, 0.0f);
@@ -325,20 +326,14 @@ namespace UmbralMithrix
 
         private void CreateDoppelItem()
         {
-            LanguageAPI.Add("UMBRALMITHRIX_UMBRAL_NAME", "Core of The Collective");
-            LanguageAPI.Add("UMBRALMITHRIX_UMBRAL_PICKUP", "A trophy from a battle hard fought.");
-            LanguageAPI.Add("UMBRALMITHRIX_UMBRAL_DESC", "A trophy from a battle hard fought.");
-            LanguageAPI.Add("UMBRALMITHRIX_UMBRAL_LORE", "<style=cMono>\nWe should have stopped.\n\n</style>When we discovered the void, it raised a lot of questions for us. The void was a physical place, a depository for a sapient species that fit somewhere in the matter of our realm, a curiosity we could observe. But there were seams, an inbetween space that sewed places like the void and ours together. The wall that separated corporeality, a fathomless null stretched to infinity. An ineffable, dark vastness that resided between, truly embodying the name of what 'the void' meant to many before our discoveries. It was decidedly designated as separate from our physical realm, it was simply declared as 'something else'. A dark nothing, an umbral domain.\n\n<style=cMono>We should have left it alone.</style>\n\nA few of us wanted to study this further, an advancement into metaphysical elements could have bridged the gap into faster than light travel. Tapping into this space, it became immediately clear we weren't alone. We expected the dread, the feeling of cold nothing as your physical senses were ripped from your consciousness. We didn't expect the hatred. Overwhelming malevolence and contempt filled my mind, touching edges of my consciousness I've never felt before, laying waste to memories, replacing them all with that twisted disdain. It was only for a moment, but I felt myself there for eternity, drifting in that inbetween. I had a revelation in that time, in the fleeting moments between where my mind could bear the onslaught. The hatred wasn't directed at me, this wasn't a result of us trespassing or invading, it was loathing pure and undiluted. It was indiscriminate\n\n<style=cMono>It was inevitable.</style>\n\nWe destroyed the pathway to this place of course. We held on to this secret, bearing the responsibility as guardians. A terrible burden, but required. Years later I still find myself reeling, unable to banish that violating malevolence from the hidden corners of my mind. Now though, I’m at the end of my life and I've long since realized my greatest fears may come to pass without my intervention. When I - the last guardian - am gone, the gate of this prison may yet again be opened and without concern for that malignant presence that would pass through. I use this as my last testament to implore you, to beg, do not open that gate. Do not let that horror manifest itself outside of that ethereal realm.\n\n<style=cMono>Do not set that umbra free.</style>\n");
-            LanguageAPI.Add("UMBRALMITHRIX_UMBRAL_SUBTITLENAMETOKEN", "The Collective");
-            LanguageAPI.Add("UMBRALMITHRIX_UMBRAL_MODIFIER", "Umbral");
             UmbralItem = ScriptableObject.CreateInstance<ItemDef>();
             UmbralItem.name = "UmbralMithrixUmbralItem";
             UmbralItem.deprecatedTier = ItemTier.Lunar;
             UmbralItem.tags = new ItemTag[] { ItemTag.WorldUnique, ItemTag.AIBlacklist, ItemTag.CannotCopy, ItemTag.CannotDuplicate };
-            UmbralItem.nameToken = "UMBRALMITHRIX_UMBRAL_NAME";
-            UmbralItem.pickupToken = "UMBRALMITHRIX_UMBRAL_PICKUP";
-            UmbralItem.descriptionToken = "UMBRALMITHRIX_UMBRAL_DESC";
-            UmbralItem.loreToken = "UMBRALMITHRIX_UMBRAL_LORE";
+            UmbralItem.nameToken = "UMBRALMITHRIX_UMBRAL_ITEM_NAME";
+            UmbralItem.pickupToken = "UMBRALMITHRIX_UMBRAL_ITEM_PICKUP";
+            UmbralItem.descriptionToken = "UMBRALMITHRIX_UMBRAL_ITEM_DESC";
+            UmbralItem.loreToken = "UMBRALMITHRIX_UMBRAL_ITEM_LORE";
             UmbralItem.pickupIconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/TeamDeath/texArtifactDeathDisabled.png").WaitForCompletion();
             UmbralItem.pickupModelPrefab = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/TeamDeath/PickupTeamDeath.prefab").WaitForCompletion(), "PickupUmbralCore", false);
             Material material = Addressables.LoadAssetAsync<Material>("RoR2/Base/InvadingDoppelganger/matDoppelganger.mat").WaitForCompletion();

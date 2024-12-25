@@ -27,15 +27,17 @@ namespace UmbralMithrix
             UmbralMithrix.AdjustBaseSkills();
             UmbralMithrix.AdjustBaseStats();
 
-            GameObject gameObject1 = GameObject.Find("EscapeSequenceController");
-            if (gameObject1)
+            GameObject escapeSequenceController = GameObject.Find("EscapeSequenceController");
+            if (escapeSequenceController)
             {
-                GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(gameObject1.transform.GetChild(0).GetChild(8).gameObject, new Vector3(-88.5f, 491.5f, -0.3f), Quaternion.identity);
-                gameObject2.transform.eulerAngles = new Vector3(270f, 0.0f, 0.0f);
-                gameObject2.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                gameObject2.AddComponent<NetworkIdentity>();
-                NetworkServer.Spawn(gameObject2);
+                Transform megaGlowsParticles = escapeSequenceController.transform.Find("EscapeSequenceObjects/Mega Glows");
+                if (megaGlowsParticles)
+                {
+                    GameObject arenaMegaGlowsParticles = GameObject.Instantiate<GameObject>(megaGlowsParticles.gameObject, new Vector3(-88.5f, 491.5f, -0.3f), Quaternion.Euler(270f, 0f, 0f));
+                    arenaMegaGlowsParticles.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+                }
             }
+
             orig(self);
         }
 

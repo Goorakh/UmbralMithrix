@@ -98,7 +98,7 @@ namespace UmbralMithrix
         public static Material doppelMat = Addressables.LoadAssetAsync<Material>("RoR2/Base/InvadingDoppelganger/matDoppelganger.mat").WaitForCompletion();
         public static SpawnCard mithrixHurtP3Card = ScriptableObject.CreateInstance<CharacterSpawnCard>();
         public static GameObject youngTeleporter = Addressables.LoadAssetAsync<GameObject>("RoR2/Junk/YoungTeleporter.prefab").WaitForCompletion();
-        public static Transform practiceFire = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/bazaar/Bazaar_Light.prefab").WaitForCompletion(), "PracticeFire").transform.GetChild(0);
+        public static Transform practiceFire = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/bazaar/Bazaar_Light.prefab").WaitForCompletion().transform.Find("FireLODLevel").gameObject, "PracticeFire").transform;
         public static GameObject implodeEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Vagrant/VagrantNovaExplosion.prefab").WaitForCompletion();
         public static GameObject tether = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/EliteEarth/AffixEarthTetherVFX.prefab").WaitForCompletion();
         SkillDef fireLunarShardsDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/FireLunarShards.asset").WaitForCompletion();
@@ -150,19 +150,34 @@ namespace UmbralMithrix
 
         private void P4DeathOrbSetup()
         {
-            voidling.transform.GetChild(0).gameObject.SetActive(false);
-            List<Material> materials = [
+            if (voidling.TryGetComponent(out ModelLocator modelLocator))
+            {
+                Transform modelTransform = modelLocator.modelTransform;
+                if (modelTransform)
+                {
+                    modelTransform.gameObject.SetActive(false);
+                }
+            }
+
+            SphereZone safeZone = voidling.GetComponent<SphereZone>();
+            safeZone.radius = 275f;
+
+            if (safeZone.rangeIndicator)
+            {
+                MeshRenderer rangeIndicatorRenderer = safeZone.rangeIndicator.GetComponentInChildren<MeshRenderer>();
+                if (rangeIndicatorRenderer)
+                {
+                    rangeIndicatorRenderer.sharedMaterials = [
                 preBossMat,
                 arenaWallMat,
                 stealAuraMat
             ];
+                }
+            }
 
-            voidling.transform.GetChild(1).GetChild(0).GetComponent<MeshRenderer>().SetMaterials(materials);
-            voidling.GetComponent<SphereZone>().radius = 275f;
-
-            FogDamageController component = voidling.GetComponent<FogDamageController>();
-            component.healthFractionPerSecond = 0.01f;
-            component.healthFractionRampCoefficientPerSecond = 2.5f;
+            FogDamageController fogDamageController = voidling.GetComponent<FogDamageController>();
+            fogDamageController.healthFractionPerSecond = 0.01f;
+            fogDamageController.healthFractionRampCoefficientPerSecond = 2.5f;
         }
 
         private void MiscSetup()
@@ -174,11 +189,21 @@ namespace UmbralMithrix
 
         public static void ArenaSetup()
         {
-            GameObject gameObject1 = GameObject.Find("HOLDER: Final Arena");
-            if (gameObject1)
+            GameObject finalAreaHolder = GameObject.Find("HOLDER: Final Arena");
+            if (finalAreaHolder)
             {
-                gameObject1.transform.GetChild(3).gameObject.SetActive(false);
-                gameObject1.transform.GetChild(7).gameObject.SetActive(false);
+                Transform innerColumns = finalAreaHolder.transform.Find("Columns_Inner");
+                if (innerColumns)
+                {
+                    innerColumns.gameObject.SetActive(false);
+                }
+
+                Transform rocks = finalAreaHolder.transform.Find("Rocks");
+                if (rocks)
+            {
+                    rocks.gameObject.SetActive(false);
+                }
+
                 /*
                 Transform child1 = gameObject1.transform.GetChild(1);
                 for (int index1 = 8; index1 < 12; ++index1)
@@ -190,11 +215,15 @@ namespace UmbralMithrix
                 */
             }
 
-            GameObject gameObject2 = GameObject.Find("SceneInfo");
-            if (!gameObject2)
-                return;
-
-            gameObject2.transform.GetChild(0).transform.GetChild(3).GetChild(0).GetChild(3).gameObject.SetActive(true);
+            SceneInfo sceneInfo = SceneInfo.instance;
+            if (sceneInfo)
+            {
+                Transform throneTransform = sceneInfo.transform.Find("BrotherMissionController/BrotherEncounter, Phase 1/PhaseObjects/mdlBrotherThrone");
+                if (throneTransform)
+                {
+                    throneTransform.gameObject.SetActive(true);
+                }
+            }
         }
 
         public static void SpawnPracticeModeShrine()
@@ -204,7 +233,7 @@ namespace UmbralMithrix
             gameObject1.GetComponent<PurchaseInteraction>().NetworkcontextToken = "UMBRAL_PRACTICE_MODE_CONTEXT";
             gameObject1.name = "PracticeModeShrine";
             gameObject2.transform.parent = gameObject1.transform;
-            gameObject1.transform.GetChild(1).localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+            gameObject2.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
             NetworkServer.Spawn(gameObject1);
         }
 

@@ -11,8 +11,6 @@ namespace UmbralMithrix
     {
         public bool finishedItemSteal = false;
         private CharacterBody body;
-        private bool isServer = false;
-        public List<CharacterBody> playerBodies = new();
         private float shockwaveStopwatch = 0f;
         private float pizzaStopwatch = 0f;
         private float missileStopwatch = 0f;
@@ -20,24 +18,51 @@ namespace UmbralMithrix
         private float pizzaInterval = 1.5f;
         private float missileInterval = 1.25f;
 
+        readonly List<CharacterBody> _trackedPlayers = new List<CharacterBody>();
+
         private void Start()
         {
             body = GetComponent<CharacterBody>();
-            isServer = GetComponent<NetworkIdentity>().isServer;
-            foreach (CharacterMaster cm in CharacterMaster.readOnlyInstancesList)
+        }
+
+        void OnEnable()
+        {
+            foreach (PlayerCharacterMasterController playerMasterController in PlayerCharacterMasterController.instances)
             {
-                if (cm.teamIndex == TeamIndex.Player)
+                if (playerMasterController && playerMasterController.isConnected && playerMasterController.master)
                 {
-                    CharacterBody cb = cm.GetBody();
-                    if (cb && cb.isPlayerControlled)
-                        playerBodies.Add(cb);
+                    CharacterBody playerBody = playerMasterController.master.GetBody();
+
+                    if (playerBody)
+                    {
+                        handlePlayerBody(playerBody);
+                    }
                 }
             }
+
+            CharacterBody.onBodyStartGlobal += onBodyStartGlobal;
+            CharacterBody.onBodyDestroyGlobal += onBodyDestroyGlobal;
+        }
+
+        void OnDisable()
+        {
+            CharacterBody.onBodyStartGlobal -= onBodyStartGlobal;
+            CharacterBody.onBodyDestroyGlobal -= onBodyDestroyGlobal;
+
+            foreach (CharacterBody playerBody in _trackedPlayers)
+            {
+                playerBody.RemoveBuff(RoR2Content.Buffs.TeamWarCry);
+            }
+
+            _trackedPlayers.Clear();
         }
 
         private void FixedUpdate()
         {
-            if (finishedItemSteal && body.healthComponent && body.healthComponent.alive && isServer)
+            if (!NetworkServer.active)
+                return;
+
+            if (finishedItemSteal && body.healthComponent && body.healthComponent.alive)
             {
                 missileStopwatch += Time.deltaTime;
                 pizzaStopwatch += Time.deltaTime;
@@ -81,15 +106,21 @@ namespace UmbralMithrix
                 GameObject prefab = UmbralMithrix.leftP4Line;
                 if ((double)UnityEngine.Random.value <= 0.5)
                     prefab = UmbralMithrix.rightP4Line;
-                Vector3 footPosition = playerBodies[UnityEngine.Random.Range(0, playerBodies.Count)].footPosition with
+
+                Vector3 pizzaSpawnPosition = body.footPosition;
+                if (_trackedPlayers.Count > 0)
                 {
-                    y = 491f
-                };
-                footPosition += vector3_4;
+                    pizzaSpawnPosition = _trackedPlayers[UnityEngine.Random.Range(0, _trackedPlayers.Count)].footPosition with
+                    {
+                        y = 491f
+                    };
+                }
+
+                pizzaSpawnPosition += vector3_4;
                 for (int index2 = 0; index2 < 9; ++index2)
                 {
                     Vector3 forward = Quaternion.AngleAxis(num * index2, Vector3.up) * vector3_3;
-                    ProjectileManager.instance.FireProjectile(prefab, footPosition, Util.QuaternionSafeLookRotation(forward), gameObject, body.damage * (UltChannelState.waveProjectileDamageCoefficient * 0.5f), UltChannelState.waveProjectileForce / 8f, Util.CheckRoll(body.crit, body.master));
+                    ProjectileManager.instance.FireProjectile(prefab, pizzaSpawnPosition, Util.QuaternionSafeLookRotation(forward), gameObject, body.damage * (UltChannelState.waveProjectileDamageCoefficient * 0.5f), UltChannelState.waveProjectileForce / 8f, Util.CheckRoll(body.crit, body.master));
                 }
             }
 
@@ -105,6 +136,28 @@ namespace UmbralMithrix
                     Vector3 forward = Quaternion.AngleAxis(num7 * index, Vector3.up) * vector3;
                     ProjectileManager.instance.FireProjectile(ExitSkyLeap.waveProjectilePrefab, footPosition, Util.QuaternionSafeLookRotation(forward), gameObject, body.damage * (ExitSkyLeap.waveProjectileDamageCoefficient * 0.75f), ExitSkyLeap.waveProjectileForce / 4f, Util.CheckRoll(body.crit, body.master));
                 }
+            }
+        }
+
+        void onBodyStartGlobal(CharacterBody body)
+        {
+            if (body.isPlayerControlled)
+            {
+                handlePlayerBody(body);
+            }
+        }
+
+        void onBodyDestroyGlobal(CharacterBody body)
+        {
+            _trackedPlayers.Remove(body);
+        }
+
+        void handlePlayerBody(CharacterBody playerBody)
+        {
+            if (!_trackedPlayers.Contains(playerBody))
+            {
+                _trackedPlayers.Add(playerBody);
+                playerBody.AddBuff(RoR2Content.Buffs.TeamWarCry);
             }
         }
     }

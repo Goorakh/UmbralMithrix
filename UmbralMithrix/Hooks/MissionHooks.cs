@@ -74,18 +74,6 @@ namespace UmbralMithrix
         {
             orig(self);
             GameObject.Find("InactiveVoidling(Clone)").GetComponent<HealthComponent>().Suicide();
-
-            foreach (TeamComponent teamMember in TeamComponent.GetTeamMembers(TeamIndex.Player))
-            {
-                if (!teamMember)
-                    continue;
-
-                CharacterBody body = teamMember.body;
-                if (!body)
-                    continue;
-
-                body.RemoveBuff(RoR2Content.Buffs.TeamWarCry);
-            }
         }
 
         private void BrotherEncounterPhaseBaseStateOnEnter(On.EntityStates.Missions.BrotherEncounter.BrotherEncounterPhaseBaseState.orig_OnEnter orig, BrotherEncounterPhaseBaseState self)

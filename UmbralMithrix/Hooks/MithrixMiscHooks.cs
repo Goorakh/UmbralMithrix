@@ -243,18 +243,6 @@ namespace UmbralMithrix
         {
             SpellChannelState.maxDuration = 5f;
 
-            foreach (TeamComponent teamMember in TeamComponent.GetTeamMembers(TeamIndex.Player))
-            {
-                if (!teamMember)
-                    continue;
-
-                CharacterBody body = teamMember.body;
-                if (!body)
-                    continue;
-
-                body.AddBuff(RoR2Content.Buffs.TeamWarCry);
-            }
-
             orig(self);
         }
 

@@ -1,4 +1,4 @@
-`-.-.-`
+`2.5.3`
 
 - Phase 4:
   - Fixed respawning via Seed of Life stopping pizza attack and not re-applying frenzy buff.

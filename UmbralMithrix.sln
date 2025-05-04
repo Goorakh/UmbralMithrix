@@ -5,11 +5,22 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Metadata", "Metadata", "{3A26DDA8-2697-4D64-962B-DB9E2DC00EF6}"
 	ProjectSection(SolutionItems) = preProject
+		CHANGELOG.md = CHANGELOG.md
 		manifest.json = manifest.json
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UmbralMithrix", "UmbralMithrix\UmbralMithrix.csproj", "{C66FBA5E-E871-48FB-9B54-D5FA553C03A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lang", "lang", "{0ABC6737-9B49-42AE-99B9-EB83D3F3C047}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{AE9C995E-28D5-4D3A-9368-C733E84E328C}"
+	ProjectSection(SolutionItems) = preProject
+		lang\en\CharacterBodies.txt = lang\en\CharacterBodies.txt
+		lang\en\Chat.txt = lang\en\Chat.txt
+		lang\en\Interactables.txt = lang\en\Interactables.txt
+		lang\en\Items.txt = lang\en\Items.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +35,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0ABC6737-9B49-42AE-99B9-EB83D3F3C047} = {3A26DDA8-2697-4D64-962B-DB9E2DC00EF6}
+		{AE9C995E-28D5-4D3A-9368-C733E84E328C} = {0ABC6737-9B49-42AE-99B9-EB83D3F3C047}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25394121-1456-4FD9-A853-060A4DBBB74C}

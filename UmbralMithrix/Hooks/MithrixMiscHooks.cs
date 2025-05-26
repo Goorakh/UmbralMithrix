@@ -1,7 +1,4 @@
-using EntityStates;
 using EntityStates.BrotherMonster;
-using EntityStates.BrotherMonster.Weapon;
-using EntityStates.LunarWisp;
 using RoR2;
 using RoR2.CharacterAI;
 using RoR2.Projectile;
@@ -15,10 +12,6 @@ namespace UmbralMithrix
     {
         public MithrixMiscHooks()
         {
-            On.EntityStates.BrotherMonster.EnterSkyLeap.OnEnter += EnterSkyLeap_OnEnter;
-            On.EntityStates.BrotherMonster.HoldSkyLeap.OnEnter += HoldSkyLeap_OnEnter;
-            On.EntityStates.BrotherMonster.ExitSkyLeap.OnEnter += ExitSkyLeap_OnEnter;
-            On.EntityStates.BrotherMonster.SprintBash.OnEnter += SprintBash_OnEnter;
             On.EntityStates.BrotherMonster.SprintBash.OnExit += SprintBash_OnExit;
             On.EntityStates.BrotherMonster.FistSlam.OnEnter += FistSlam_OnEnter;
             On.EntityStates.BrotherMonster.UltChannelState.FireWave += UltChannelState_FireWave;
@@ -28,68 +21,6 @@ namespace UmbralMithrix
             On.EntityStates.BrotherMonster.SpellChannelExitState.OnEnter += SpellChannelExitState_OnEnter;
             On.EntityStates.BrotherMonster.StaggerEnter.OnEnter += StaggerEnter_OnEnter;
             On.EntityStates.BrotherMonster.TrueDeathState.OnEnter += TrueDeathState_OnEnter;
-        }
-
-        private void EnterSkyLeap_OnEnter(On.EntityStates.BrotherMonster.EnterSkyLeap.orig_OnEnter orig, EnterSkyLeap self)
-        {
-            EnterSkyLeap.baseDuration = 0.25f;
-            Util.PlaySound("Play_voidRaid_snipe_shoot_final", self.characterBody.gameObject);
-            orig(self);
-        }
-
-        private void HoldSkyLeap_OnEnter(On.EntityStates.BrotherMonster.HoldSkyLeap.orig_OnEnter orig, HoldSkyLeap self)
-        {
-            HoldSkyLeap.duration = ModConfig.CrushingLeap.Value;
-            if (self.isAuthority)
-            {
-                List<CharacterBody> playerBodies = new();
-                foreach (CharacterMaster cm in CharacterMaster.readOnlyInstancesList)
-                {
-                    if (cm.teamIndex == TeamIndex.Player)
-                    {
-                        CharacterBody cb = cm.GetBody();
-                        if (cb && cb.isPlayerControlled)
-                            playerBodies.Add(cb);
-                    }
-                }
-
-                if (playerBodies.Count > 0)
-                {
-                    Vector3 target = playerBodies[UnityEngine.Random.Range(0, playerBodies.Count)].footPosition;
-                    if (Physics.Raycast(new Ray(target, Vector3.down), out RaycastHit hit, 200f, (int)LayerIndex.world.mask, QueryTriggerInteraction.Ignore))
-                    {
-                        self.characterMotor.Motor.SetPositionAndRotation(hit.point + new Vector3(0, 10, 0), Quaternion.identity);
-                    }
-                    else
-                    {
-                        self.characterMotor.Motor.SetPositionAndRotation(target, Quaternion.identity);
-                    }
-                }
-
-                GameObject workPls = GameObject.Instantiate(UmbralMithrix.leapIndicatorPrefab, self.characterBody.footPosition, Quaternion.identity);
-                float radius = self.characterBody.radius / 2;
-                workPls.transform.localScale = new Vector3(radius, radius, radius);
-                workPls.AddComponent<SelfDestructController>();
-                UmbralMithrix.leapIndicator = workPls;
-                NetworkServer.Spawn(workPls);
-            }
-
-            orig(self);
-        }
-
-        private void ExitSkyLeap_OnEnter(On.EntityStates.BrotherMonster.ExitSkyLeap.orig_OnEnter orig, ExitSkyLeap self)
-        {
-            orig(self);
-
-            if (!PhaseCounter.instance || PhaseCounter.instance.phase != 2)
-                return;
-
-            GenericSkill genericSkill = self.skillLocator ? self.skillLocator.special : null;
-            if (!genericSkill)
-                return;
-
-            UltChannelState.replacementSkillDef.activationState = new SerializableEntityStateType(typeof(UltEnterState));
-            genericSkill.SetSkillOverride(self.outer, UltChannelState.replacementSkillDef, GenericSkill.SkillOverridePriority.Contextual);
         }
 
         private void FistSlam_OnEnter(On.EntityStates.BrotherMonster.FistSlam.orig_OnEnter orig, FistSlam self)
@@ -190,45 +121,17 @@ namespace UmbralMithrix
             }
         }
 
-        private void SprintBash_OnEnter(On.EntityStates.BrotherMonster.SprintBash.orig_OnEnter orig, SprintBash self)
-        {
-            if (self.isAuthority)
-            {
-                Ray aimRay = self.GetAimRay();
-                if (self.characterBody.name == "BrotherBody(Clone)")
-                {
-                    for (int index = 0; index < 6; ++index)
-                    {
-                        Util.PlaySound(FireLunarShards.fireSound, self.gameObject);
-                        ProjectileManager.instance.FireProjectile(FireLunarShards.projectilePrefab, aimRay.origin, Quaternion.LookRotation(aimRay.direction), self.gameObject, (float)((double)self.characterBody.damage * 0.100000001490116 / 12.0), 0.0f, Util.CheckRoll(self.characterBody.crit, self.characterBody.master));
-                    }
-
-                    if (PhaseCounter.instance && PhaseCounter.instance.phase != 1 && ModConfig.addShockwave.Value)
-                    {
-                        Vector3 vector3 = Vector3.ProjectOnPlane(self.inputBank.aimDirection, Vector3.up);
-                        Vector3 footPosition = self.characterBody.footPosition;
-                        Vector3 forward = Quaternion.AngleAxis(0.0f, Vector3.up) * vector3;
-                        ProjectileManager.instance.FireProjectile(WeaponSlam.waveProjectilePrefab, footPosition, Util.QuaternionSafeLookRotation(forward), self.gameObject, self.characterBody.damage * WeaponSlam.waveProjectileDamageCoefficient, WeaponSlam.waveProjectileForce, Util.CheckRoll(self.characterBody.crit, self.characterBody.master));
-                    }
-                }
-                else
-                {
-                    ProjectileManager.instance.FireProjectile(SeekingBomb.projectilePrefab, aimRay.origin, Util.QuaternionSafeLookRotation(aimRay.direction), self.gameObject, self.characterBody.damage * (SeekingBomb.bombDamageCoefficient * 0.75f), SeekingBomb.bombForce, Util.CheckRoll(self.critStat, self.characterBody.master), speedOverride: 0.0f);
-                }
-            }
-
-            orig(self);
-        }
-
         private void SprintBash_OnExit(On.EntityStates.BrotherMonster.SprintBash.orig_OnExit orig, SprintBash self)
         {
             orig(self);
-
-            foreach (ProjectileController projectileController in InstanceTracker.GetInstancesList<ProjectileController>())
+            if (self.characterBody.name == "BrotherGlassBody(Clone)")
             {
-                if (projectileController.name == "LunarWispTrackingBomb(Clone)" && projectileController.TryGetComponent(out ProjectileSimple projectileSimple))
+                foreach (ProjectileController projectileController in InstanceTracker.GetInstancesList<ProjectileController>())
                 {
-                    projectileSimple.desiredForwardSpeed = 50f;
+                    if (projectileController.name == "LunarWispTrackingBomb(Clone)" && projectileController.TryGetComponent(out ProjectileSimple projectileSimple))
+                    {
+                        projectileSimple.desiredForwardSpeed = 50f;
+                    }
                 }
             }
         }

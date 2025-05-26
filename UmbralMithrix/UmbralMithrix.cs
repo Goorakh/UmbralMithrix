@@ -76,6 +76,17 @@ namespace UmbralMithrix
         };
 
         public static ItemDef UmbralItem;
+
+        public static GameObject umbralSlamImpact = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/BrotherSlamImpact.prefab").WaitForCompletion();
+        public static GameObject umbralSlamProjectile = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/BrotherSunderWave, Energized.prefab").WaitForCompletion();
+        public static GameObject umbralSlamPillar = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/BrotherFirePillar.prefab").WaitForCompletion();
+        public static GameObject umbralSlamHitEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Huntress/OmniImpactVFXHuntress.prefab").WaitForCompletion();
+        public static NetworkSoundEventDef umbralSlamHitSound = Addressables.LoadAssetAsync<NetworkSoundEventDef>("RoR2/Base/Croco/nseAcridBiteHit.asset").WaitForCompletion();
+
+        public static GameObject umbralLeapWave = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/BrotherSunderWave.prefab").WaitForCompletion();
+
+        public static GameObject umbralSwingEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/BrotherSwing1, Kickup.prefab").WaitForCompletion();
+
         public static GameObject leapIndicatorPrefab = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Vagrant/VagrantNovaAreaIndicator.prefab").WaitForCompletion(), "UmbralLeapIndicator");
         public static GameObject leapIndicator;
         public static SpawnCard timeCrystalCard = Addressables.LoadAssetAsync<SpawnCard>("RoR2/Base/WeeklyRun/bscTimeCrystal.asset").WaitForCompletion();
@@ -108,10 +119,22 @@ namespace UmbralMithrix
         public static GameObject tether = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/EliteEarth/AffixEarthTetherVFX.prefab").WaitForCompletion();
         SkillDef fireLunarShardsDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/FireLunarShards.asset").WaitForCompletion();
         public static GameObject voidling = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/VoidRaidCrab/MiniVoidRaidCrabBodyPhase3.prefab").WaitForCompletion(), "InactiveVoidling");
+        // TODO: actually make the skills and do this less lazily
+        private static SkillDef shardDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/FireLunarShards.asset").WaitForCompletion();
+        private static SkillDef slamDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/WeaponSlam.asset").WaitForCompletion();
+        private static SkillDef bashDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/SprintBash.asset").WaitForCompletion();
+        private static SkillDef leapDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/SkyLeap.asset").WaitForCompletion();
+
 
         public void Awake()
         {
             Log.Init(Logger);
+
+            // TODO: actually make the skills and do this less lazily
+            shardDef.activationState = new SerializableEntityStateType(typeof(EntityStates.FireUmbralShards));
+            slamDef.activationState = new SerializableEntityStateType(typeof(EntityStates.UmbralHammerSlam));
+            bashDef.activationState = new SerializableEntityStateType(typeof(EntityStates.UmbralBash));
+            leapDef.activationState = new SerializableEntityStateType(typeof(EntityStates.EnterUmbralLeap));
 
             leapIndicatorPrefab.AddComponent<NetworkIdentity>();
             mithrixMaster.GetComponents<AISkillDriver>().Where(x => x.customName == "CastUlt").First().requiredSkill = null;
@@ -148,7 +171,6 @@ namespace UmbralMithrix
             AddContent();
             P4DeathOrbSetup();
             MiscHooks miscHooks = new MiscHooks();
-            PrimaryHooks primaryHooks = new PrimaryHooks();
             MissionHooks missionHooks = new MissionHooks();
             MithrixMiscHooks mithrixMiscHooks = new MithrixMiscHooks();
 
@@ -191,7 +213,7 @@ namespace UmbralMithrix
         {
             mithrix.GetComponent<CharacterBody>().bodyFlags |= CharacterBody.BodyFlags.ImmuneToExecutes;
             mithrixHurtP3.GetComponent<CharacterBody>().bodyFlags |= CharacterBody.BodyFlags.ImmuneToExecutes;
-            mithrixGlass.GetComponent<EntityStateMachine>().initialStateType = new SerializableEntityStateType(typeof(GlassSpawnState));
+            mithrixGlass.GetComponent<EntityStateMachine>().initialStateType = new SerializableEntityStateType(typeof(EntityStates.GlassSpawnState));
         }
 
         public static void ArenaSetup()
@@ -357,7 +379,13 @@ namespace UmbralMithrix
 
         private void AddContent()
         {
-            ContentAddition.AddEntityState<GlassSpawnState>(out _);
+            ContentAddition.AddEntityState<EntityStates.GlassSpawnState>(out _);
+            ContentAddition.AddEntityState<EntityStates.FireUmbralShards>(out _);
+            ContentAddition.AddEntityState<EntityStates.UmbralHammerSlam>(out _);
+            ContentAddition.AddEntityState<EntityStates.EnterUmbralLeap>(out _);
+            ContentAddition.AddEntityState<EntityStates.HoldUmbralLeap>(out _);
+            ContentAddition.AddEntityState<EntityStates.ExitUmbralLeap>(out _);
+            ContentAddition.AddEntityState<EntityStates.UmbralBash>(out _);
         }
 
         private void CreateDoppelItem()

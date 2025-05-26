@@ -2,7 +2,7 @@ using EntityStates;
 using EntityStates.LunarWisp;
 using RoR2;
 
-namespace UmbralMithrix
+namespace UmbralMithrix.EntityStates
 {
     public class GlassSpawnState : BaseState
     {

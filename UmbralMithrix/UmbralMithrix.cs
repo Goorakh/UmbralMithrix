@@ -170,11 +170,19 @@ namespace UmbralMithrix
             MiscSetup();
             AddContent();
             P4DeathOrbSetup();
+            ChangeVanillaEntityStateValues();
             MiscHooks miscHooks = new MiscHooks();
             MissionHooks missionHooks = new MissionHooks();
             MithrixMiscHooks mithrixMiscHooks = new MithrixMiscHooks();
 
             LanguageManager.Register(System.IO.Path.GetDirectoryName(Info.Location));
+        }
+
+        private void ChangeVanillaEntityStateValues()
+        {
+            SetAddressableEntityStateField("RoR2/Base/Brother/EntityStates.BrotherMonster.FistSlam.asset", "healthCostFraction", "0");
+            SetAddressableEntityStateField("RoR2/Base/Brother/EntityStates.BrotherMonster.SpellChannelEnterState.asset", "duration", "3");
+            SetAddressableEntityStateField("RoR2/Base/Brother/EntityStates.BrotherMonster.SpellChannelState.asset", "maxDuration", "5");
         }
 
         private void P4DeathOrbSetup()
@@ -404,6 +412,20 @@ namespace UmbralMithrix
             foreach (Renderer componentsInChild in UmbralItem.pickupModelPrefab.GetComponentsInChildren<Renderer>())
                 componentsInChild.material = material;
             ContentAddition.AddItemDef(UmbralItem);
+        }
+
+        public static bool SetAddressableEntityStateField(string fullEntityStatePath, string fieldName, string value)
+        {
+            EntityStateConfiguration esc = Addressables.LoadAssetAsync<EntityStateConfiguration>(fullEntityStatePath).WaitForCompletion();
+            for (int i = 0; i < esc.serializedFieldsCollection.serializedFields.Length; i++)
+            {
+                if (esc.serializedFieldsCollection.serializedFields[i].fieldName == fieldName)
+                {
+                    esc.serializedFieldsCollection.serializedFields[i].fieldValue.stringValue = value;
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

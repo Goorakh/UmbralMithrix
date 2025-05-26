@@ -12,21 +12,11 @@ namespace UmbralMithrix
     {
         public MithrixMiscHooks()
         {
-            On.EntityStates.BrotherMonster.SprintBash.OnExit += SprintBash_OnExit;
-            On.EntityStates.BrotherMonster.FistSlam.OnEnter += FistSlam_OnEnter;
             On.EntityStates.BrotherMonster.UltChannelState.FireWave += UltChannelState_FireWave;
             On.EntityStates.BrotherMonster.SkyLeapDeathState.OnEnter += SkyLeapDeathState_OnEnter;
-            On.EntityStates.BrotherMonster.SpellChannelEnterState.OnEnter += SpellChannelEnterState_OnEnter;
-            On.EntityStates.BrotherMonster.SpellChannelState.OnEnter += SpellChannelState_OnEnter;
             On.EntityStates.BrotherMonster.SpellChannelExitState.OnEnter += SpellChannelExitState_OnEnter;
             On.EntityStates.BrotherMonster.StaggerEnter.OnEnter += StaggerEnter_OnEnter;
             On.EntityStates.BrotherMonster.TrueDeathState.OnEnter += TrueDeathState_OnEnter;
-        }
-
-        private void FistSlam_OnEnter(On.EntityStates.BrotherMonster.FistSlam.orig_OnEnter orig, FistSlam self)
-        {
-            FistSlam.healthCostFraction = 0.0f;
-            orig(self);
         }
 
         private void UltChannelState_FireWave(On.EntityStates.BrotherMonster.UltChannelState.orig_FireWave orig, UltChannelState self)
@@ -119,34 +109,6 @@ namespace UmbralMithrix
             {
                 orig(self);
             }
-        }
-
-        private void SprintBash_OnExit(On.EntityStates.BrotherMonster.SprintBash.orig_OnExit orig, SprintBash self)
-        {
-            orig(self);
-            if (self.characterBody.name == "BrotherGlassBody(Clone)")
-            {
-                foreach (ProjectileController projectileController in InstanceTracker.GetInstancesList<ProjectileController>())
-                {
-                    if (projectileController.name == "LunarWispTrackingBomb(Clone)" && projectileController.TryGetComponent(out ProjectileSimple projectileSimple))
-                    {
-                        projectileSimple.desiredForwardSpeed = 50f;
-                    }
-                }
-            }
-        }
-
-        private void SpellChannelEnterState_OnEnter(On.EntityStates.BrotherMonster.SpellChannelEnterState.orig_OnEnter orig, SpellChannelEnterState self)
-        {
-            SpellChannelEnterState.duration = 3f;
-            orig(self);
-        }
-
-        private static void SpellChannelState_OnEnter(On.EntityStates.BrotherMonster.SpellChannelState.orig_OnEnter orig, SpellChannelState self)
-        {
-            SpellChannelState.maxDuration = 5f;
-
-            orig(self);
         }
 
         private void SpellChannelExitState_OnEnter(On.EntityStates.BrotherMonster.SpellChannelExitState.orig_OnEnter orig, SpellChannelExitState self)

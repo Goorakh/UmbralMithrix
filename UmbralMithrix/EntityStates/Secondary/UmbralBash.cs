@@ -83,6 +83,17 @@ public class UmbralBash : BasicMeleeAttack
             modelChild.gameObject.SetActive(false);
         this.PlayCrossfade("FullBody Override", "BufferEmpty", 0.1f);
         base.OnExit();
+
+        if (this.characterBody.name == "BrotherGlassBody(Clone)")
+        {
+            foreach (ProjectileController projectileController in InstanceTracker.GetInstancesList<ProjectileController>())
+            {
+                if (projectileController.name == "LunarWispTrackingBomb(Clone)" && projectileController.TryGetComponent(out ProjectileSimple projectileSimple))
+                {
+                    projectileSimple.desiredForwardSpeed = 50f;
+                }
+            }
+        }
     }
 
     public override InterruptPriority GetMinimumInterruptPriority()

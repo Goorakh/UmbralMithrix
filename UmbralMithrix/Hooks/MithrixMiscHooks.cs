@@ -12,86 +12,10 @@ namespace UmbralMithrix
     {
         public MithrixMiscHooks()
         {
-            On.EntityStates.BrotherMonster.UltChannelState.FireWave += UltChannelState_FireWave;
             On.EntityStates.BrotherMonster.SkyLeapDeathState.OnEnter += SkyLeapDeathState_OnEnter;
             On.EntityStates.BrotherMonster.SpellChannelExitState.OnEnter += SpellChannelExitState_OnEnter;
             On.EntityStates.BrotherMonster.StaggerEnter.OnEnter += StaggerEnter_OnEnter;
             On.EntityStates.BrotherMonster.TrueDeathState.OnEnter += TrueDeathState_OnEnter;
-        }
-
-        private void UltChannelState_FireWave(On.EntityStates.BrotherMonster.UltChannelState.orig_FireWave orig, UltChannelState self)
-        {
-            if (PhaseCounter.instance)
-            {
-                UltChannelState.waveProjectileCount = 0;
-                List<CharacterBody> playerBodies = new();
-                foreach (CharacterMaster cm in CharacterMaster.readOnlyInstancesList)
-                {
-                    if (cm.teamIndex == TeamIndex.Player)
-                    {
-                        CharacterBody cb = cm.GetBody();
-                        if (cb && cb.isPlayerControlled)
-                            playerBodies.Add(cb);
-                    }
-                }
-
-                if (PhaseCounter.instance.phase == 2 && playerBodies.Count > 0)
-                {
-                    float distance = 50f;
-                    float num = 360f / ModConfig.UltimateWaves.Value;
-                    Vector3 vector3 = Vector3.ProjectOnPlane(self.inputBank.aimDirection, Vector3.up);
-                    Vector3 center = playerBodies[Random.Range(0, playerBodies.Count)].footPosition with
-                    {
-                        y = 491f
-                    };
-
-                    Vector3 point1 = center + new Vector3(-distance, 0f, -distance);
-                    Vector3 point2 = center + new Vector3(distance, 0f, -distance);
-                    Vector3 point3 = center + new Vector3(-distance, 0f, distance);
-                    Vector3 point4 = center + new Vector3(distance, 0f, distance);
-                    Vector3[] points = [point1, point2, point3, point4];
-
-                    for (int idx = 0; idx < 4; ++idx)
-                    {
-                        float offset = Random.Range(-10f, 10f);
-
-                        for (int index = 0; index < ModConfig.UltimateWaves.Value; ++index)
-                        {
-                            Vector3 forward = Quaternion.AngleAxis((num + offset) * index, Vector3.up) * vector3;
-                            ProjectileManager.instance.FireProjectile(UmbralMithrix.staticUltLine, points[idx], Util.QuaternionSafeLookRotation(forward), self.gameObject, self.characterBody.damage * UltChannelState.waveProjectileDamageCoefficient, UltChannelState.waveProjectileForce, Util.CheckRoll(self.characterBody.crit, self.characterBody.master));
-                        }
-                    }
-                }
-
-                if (PhaseCounter.instance.phase == 3)
-                {
-                    int count = PlayerCharacterMasterController.instances.Count;
-                    int num1 = ModConfig.UltimateWaves.Value;
-                    float num2 = 360f / num1;
-                    Vector3 normalized = Vector3.ProjectOnPlane(UnityEngine.Random.onUnitSphere, Vector3.up).normalized;
-                    GameObject prefab = UmbralMithrix.leftUltLine;
-                    if (UnityEngine.Random.value <= 0.5)
-                        prefab = UmbralMithrix.rightUltLine;
-
-                    PlayerCharacterMasterController instance = PlayerCharacterMasterController.instances[new System.Random().Next(0, count - 1)];
-
-                    Vector3[] vector3Array = [
-                        new Vector3(instance.body.footPosition.x, self.characterBody.footPosition.y, instance.body.footPosition.z) + new Vector3(UnityEngine.Random.Range(-45f, -15f), 0.0f, UnityEngine.Random.Range(-45f, -15f)),
-                        new Vector3(instance.body.footPosition.x, self.characterBody.footPosition.y, instance.body.footPosition.z) + new Vector3(UnityEngine.Random.Range(15f, 45f), 0.0f, UnityEngine.Random.Range(15f, 45f))
-                    ];
-
-                    for (int index1 = 0; index1 < 2; ++index1)
-                    {
-                        for (int index2 = 0; index2 < num1; ++index2)
-                        {
-                            Vector3 forward = Quaternion.AngleAxis(num2 * index2, Vector3.up) * normalized;
-                            ProjectileManager.instance.FireProjectile(prefab, vector3Array[index1], Util.QuaternionSafeLookRotation(forward), self.gameObject, self.characterBody.damage * UltChannelState.waveProjectileDamageCoefficient, UltChannelState.waveProjectileForce, Util.CheckRoll(self.characterBody.crit, self.characterBody.master));
-                        }
-                    }
-                }
-            }
-
-            orig(self);
         }
 
         private void SkyLeapDeathState_OnEnter(On.EntityStates.BrotherMonster.SkyLeapDeathState.orig_OnEnter orig, SkyLeapDeathState self)

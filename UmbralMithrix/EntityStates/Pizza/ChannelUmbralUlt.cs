@@ -1,0 +1,144 @@
+using RoR2;
+using RoR2.Projectile;
+using RoR2.Skills;
+using UnityEngine;
+using EntityStates;
+using System.Collections.Generic;
+
+namespace UmbralMithrix.EntityStates;
+
+public class ChannelUmbralUlt : BaseState
+{
+    public static GameObject waveProjectileLeftPrefab;
+    public static GameObject waveProjectileRightPrefab;
+    public static int waveProjectileCount;
+    public static float waveProjectileDamageCoefficient;
+    public static float waveProjectileForce;
+    public static int totalWaves;
+    public static float maxDuration;
+    public static GameObject channelBeginMuzzleflashEffectPrefab;
+    public static GameObject channelEffectPrefab;
+    public static string enterSoundString;
+    public static string exitSoundString;
+    private GameObject channelEffectInstance;
+    public static SkillDef replacementSkillDef;
+    private int wavesFired;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        Util.PlaySound(ChannelUmbralUlt.enterSoundString, this.gameObject);
+        Transform modelChild = this.FindModelChild("MuzzleUlt");
+        if ((bool)modelChild && (bool)ChannelUmbralUlt.channelEffectPrefab)
+            this.channelEffectInstance = Object.Instantiate<GameObject>(ChannelUmbralUlt.channelEffectPrefab, modelChild.position, Quaternion.identity, modelChild);
+        if (!(bool)ChannelUmbralUlt.channelBeginMuzzleflashEffectPrefab)
+            return;
+        EffectManager.SimpleMuzzleFlash(ChannelUmbralUlt.channelBeginMuzzleflashEffectPrefab, this.gameObject, "MuzzleUlt", false);
+    }
+
+    private void FireWave()
+    {
+        ++this.wavesFired;
+
+        if (PhaseCounter.instance)
+        {
+            ChannelUmbralUlt.waveProjectileCount = 0;
+            List<CharacterBody> playerBodies = new();
+            foreach (CharacterMaster cm in CharacterMaster.readOnlyInstancesList)
+            {
+                if (cm.teamIndex == TeamIndex.Player)
+                {
+                    CharacterBody cb = cm.GetBody();
+                    if (cb && cb.isPlayerControlled)
+                        playerBodies.Add(cb);
+                }
+            }
+
+            if (PhaseCounter.instance.phase == 2 && playerBodies.Count > 0)
+            {
+                float distance = 50f;
+                float num = 360f / ModConfig.UltimateWaves.Value;
+                Vector3 vector3 = Vector3.ProjectOnPlane(this.inputBank.aimDirection, Vector3.up);
+                Vector3 center = playerBodies[Random.Range(0, playerBodies.Count)].footPosition with
+                {
+                    y = 491f
+                };
+
+                Vector3 point1 = center + new Vector3(-distance, 0f, -distance);
+                Vector3 point2 = center + new Vector3(distance, 0f, -distance);
+                Vector3 point3 = center + new Vector3(-distance, 0f, distance);
+                Vector3 point4 = center + new Vector3(distance, 0f, distance);
+                Vector3[] points = [point1, point2, point3, point4];
+
+                for (int idx = 0; idx < 4; ++idx)
+                {
+                    float offset = Random.Range(-10f, 10f);
+
+                    for (int index = 0; index < ModConfig.UltimateWaves.Value; ++index)
+                    {
+                        Vector3 forward = Quaternion.AngleAxis((num + offset) * index, Vector3.up) * vector3;
+                        ProjectileManager.instance.FireProjectile(UmbralMithrix.staticUltLine, points[idx], Util.QuaternionSafeLookRotation(forward), this.gameObject, this.characterBody.damage * UltChannelState.waveProjectileDamageCoefficient, UltChannelState.waveProjectileForce, Util.CheckRoll(this.characterBody.crit, this.characterBody.master));
+                    }
+                }
+            }
+
+            if (PhaseCounter.instance.phase == 3)
+            {
+                int count = PlayerCharacterMasterController.instances.Count;
+                int num1 = ModConfig.UltimateWaves.Value;
+                float num2 = 360f / num1;
+                Vector3 normalized = Vector3.ProjectOnPlane(UnityEngine.Random.onUnitSphere, Vector3.up).normalized;
+                GameObject prefab = UmbralMithrix.leftUltLine;
+                if (UnityEngine.Random.value <= 0.5)
+                    prefab = UmbralMithrix.rightUltLine;
+
+                PlayerCharacterMasterController instance = PlayerCharacterMasterController.instances[new System.Random().Next(0, count - 1)];
+
+                Vector3[] vector3Array = [
+                    new Vector3(instance.body.footPosition.x, this.characterBody.footPosition.y, instance.body.footPosition.z) + new Vector3(UnityEngine.Random.Range(-45f, -15f), 0.0f, UnityEngine.Random.Range(-45f, -15f)),
+                        new Vector3(instance.body.footPosition.x, this.characterBody.footPosition.y, instance.body.footPosition.z) + new Vector3(UnityEngine.Random.Range(15f, 45f), 0.0f, UnityEngine.Random.Range(15f, 45f))
+                ];
+
+                for (int index1 = 0; index1 < 2; ++index1)
+                {
+                    for (int index2 = 0; index2 < num1; ++index2)
+                    {
+                        Vector3 forward = Quaternion.AngleAxis(num2 * index2, Vector3.up) * normalized;
+                        ProjectileManager.instance.FireProjectile(prefab, vector3Array[index1], Util.QuaternionSafeLookRotation(forward), this.gameObject, this.characterBody.damage * UltChannelState.waveProjectileDamageCoefficient, UltChannelState.waveProjectileForce, Util.CheckRoll(this.characterBody.crit, this.characterBody.master));
+                    }
+                }
+            }
+        }
+
+        Vector3 normalized = Vector3.ProjectOnPlane(Random.onUnitSphere, Vector3.up).normalized;
+        Vector3 footPosition = this.characterBody.footPosition;
+        GameObject prefab = ChannelUmbralUlt.waveProjectileLeftPrefab;
+        if ((double)Random.value <= 0.5)
+            prefab = ChannelUmbralUlt.waveProjectileRightPrefab;
+        for (int index = 0; index < ChannelUmbralUlt.waveProjectileCount; ++index)
+        {
+            Vector3 forward = Quaternion.AngleAxis(num * index, Vector3.up) * normalized;
+            ProjectileManager.instance.FireProjectileWithoutDamageType(prefab, footPosition, Util.QuaternionSafeLookRotation(forward), this.gameObject, this.characterBody.damage * ChannelUmbralUlt.waveProjectileDamageCoefficient, ChannelUmbralUlt.waveProjectileForce, Util.CheckRoll(this.characterBody.crit, this.characterBody.master));
+        }
+    }
+
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+        if (!this.isAuthority)
+            return;
+        if (Mathf.CeilToInt(this.fixedAge / ChannelUmbralUlt.maxDuration * ChannelUmbralUlt.totalWaves) > this.wavesFired)
+            this.FireWave();
+        if ((double)this.fixedAge <= ChannelUmbralUlt.maxDuration)
+            return;
+        this.outer.SetNextState(new ExitUmbralUlt());
+    }
+
+    public override void OnExit()
+    {
+        Util.PlaySound(ChannelUmbralUlt.exitSoundString, this.gameObject);
+        if ((bool)this.channelEffectInstance)
+            EntityState.Destroy(this.channelEffectInstance);
+        base.OnExit();
+    }
+}

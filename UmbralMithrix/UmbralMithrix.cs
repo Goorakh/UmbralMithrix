@@ -87,6 +87,8 @@ namespace UmbralMithrix
 
         public static GameObject umbralSwingEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/BrotherSwing1, Kickup.prefab").WaitForCompletion();
 
+        public static GameObject umbralUltMuzzleFlash = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Brother/ItemStealEndMuzzleflash.prefab").WaitForCompletion();
+
         public static GameObject leapIndicatorPrefab = PrefabAPI.InstantiateClone(Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Vagrant/VagrantNovaAreaIndicator.prefab").WaitForCompletion(), "UmbralLeapIndicator");
         public static GameObject leapIndicator;
         public static SpawnCard timeCrystalCard = Addressables.LoadAssetAsync<SpawnCard>("RoR2/Base/WeeklyRun/bscTimeCrystal.asset").WaitForCompletion();

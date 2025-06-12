@@ -1,7 +1,7 @@
 ﻿{
-  "name": "UmbralMithrixFork",
+  "name": "UmbralMithrix",
   "version_number": "2.5.3",
-  "website_url": "https://github.com/Goorakh/UmbralMithrix/issues",
+  "website_url": "https://github.com/Nuxlar/UmbralMithrix/issues",
   "description": "A reworked Mithrix fight. Fixed for SotS Items & Elites patch.",
   "dependencies": [
     "Rune580-Risk_Of_Options-2.7.0",

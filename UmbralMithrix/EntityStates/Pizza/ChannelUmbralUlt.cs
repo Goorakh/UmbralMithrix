@@ -4,6 +4,7 @@ using RoR2.Skills;
 using UnityEngine;
 using EntityStates;
 using System.Collections.Generic;
+using EntityStates.BrotherMonster;
 
 namespace UmbralMithrix.EntityStates;
 
@@ -40,6 +41,10 @@ public class ChannelUmbralUlt : BaseState
     {
         ++this.wavesFired;
 
+        float num = 360f / ModConfig.UltimateWaves.Value;
+        Vector3 normalized;
+        GameObject prefab;
+
         if (PhaseCounter.instance)
         {
             ChannelUmbralUlt.waveProjectileCount = 0;
@@ -57,7 +62,7 @@ public class ChannelUmbralUlt : BaseState
             if (PhaseCounter.instance.phase == 2 && playerBodies.Count > 0)
             {
                 float distance = 50f;
-                float num = 360f / ModConfig.UltimateWaves.Value;
+
                 Vector3 vector3 = Vector3.ProjectOnPlane(this.inputBank.aimDirection, Vector3.up);
                 Vector3 center = playerBodies[Random.Range(0, playerBodies.Count)].footPosition with
                 {
@@ -87,8 +92,8 @@ public class ChannelUmbralUlt : BaseState
                 int count = PlayerCharacterMasterController.instances.Count;
                 int num1 = ModConfig.UltimateWaves.Value;
                 float num2 = 360f / num1;
-                Vector3 normalized = Vector3.ProjectOnPlane(UnityEngine.Random.onUnitSphere, Vector3.up).normalized;
-                GameObject prefab = UmbralMithrix.leftUltLine;
+                normalized = Vector3.ProjectOnPlane(UnityEngine.Random.onUnitSphere, Vector3.up).normalized;
+                prefab = UmbralMithrix.leftUltLine;
                 if (UnityEngine.Random.value <= 0.5)
                     prefab = UmbralMithrix.rightUltLine;
 
@@ -110,9 +115,9 @@ public class ChannelUmbralUlt : BaseState
             }
         }
 
-        Vector3 normalized = Vector3.ProjectOnPlane(Random.onUnitSphere, Vector3.up).normalized;
+        normalized = Vector3.ProjectOnPlane(Random.onUnitSphere, Vector3.up).normalized;
         Vector3 footPosition = this.characterBody.footPosition;
-        GameObject prefab = ChannelUmbralUlt.waveProjectileLeftPrefab;
+        prefab = ChannelUmbralUlt.waveProjectileLeftPrefab;
         if ((double)Random.value <= 0.5)
             prefab = ChannelUmbralUlt.waveProjectileRightPrefab;
         for (int index = 0; index < ChannelUmbralUlt.waveProjectileCount; ++index)

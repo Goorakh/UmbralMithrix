@@ -1,3 +1,9 @@
+`2.5.4`
+
+- Major internal code changes (mod should be unchanged functionally)
+- Refactored configs
+- Updated dependencies
+
 `2.5.3`
 
 - Phase 4:

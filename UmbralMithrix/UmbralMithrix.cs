@@ -1,7 +1,6 @@
 using BepInEx;
 using EntityStates;
 using EntityStates.BrotherMonster;
-using EntityStates.BrotherMonster.Weapon;
 using R2API;
 using Rewired.ComponentControls.Effects;
 using RoR2;
@@ -9,7 +8,6 @@ using RoR2.CharacterAI;
 using RoR2.ContentManagement;
 using RoR2.Projectile;
 using RoR2.Skills;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UmbralMithrix.EntityStates;
@@ -22,7 +20,7 @@ namespace UmbralMithrix
 {
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID)]
-    [BepInDependency(PrefabAPI.PluginGUID)]
+    [BepInDependency(R2API.PrefabAPI.PluginGUID)]
     public class UmbralMithrix : BaseUnityPlugin
     {
         public const string PluginGUID = "com." + PluginAuthor + "." + PluginName;

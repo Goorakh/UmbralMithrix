@@ -291,8 +291,9 @@ namespace UmbralMithrix
             try
             {
                 RiskOfOptions.ModSettingsManager.SetModDescription("Umbral Mithrix", UmbralMithrix.PluginGUID, UmbralMithrix.PluginName);
-
-                var iconStream = File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(UmbralMithrix.Instance.Info.Location), "icon.png"));
+                string pathString = Path.GetDirectoryName(UmbralMithrix.Instance.Info.Location);
+                string iconPath = pathString.Substring(0, pathString.Length - 21);
+                var iconStream = File.ReadAllBytes(Path.Combine(iconPath, "icon.png"));
                 var tex = new Texture2D(256, 256);
                 tex.LoadImage(iconStream);
                 var icon = Sprite.Create(tex, new Rect(0, 0, 256, 256), new Vector2(0.5f, 0.5f));

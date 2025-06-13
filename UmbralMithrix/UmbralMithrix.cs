@@ -16,6 +16,7 @@ using UmbralMithrix.EntityStates;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using BepInEx.Bootstrap;
 
 namespace UmbralMithrix
 {
@@ -29,6 +30,9 @@ namespace UmbralMithrix
         public const string PluginName = "UmbralMithrix";
         public const string PluginVersion = "2.5.3";
 
+        internal static UmbralMithrix Instance { get; private set; }
+
+        public static bool RooInstalled => Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions");
         public static bool practiceModeEnabled;
         public static bool hasfired;
         public static bool spawnedClone = false;
@@ -127,7 +131,11 @@ namespace UmbralMithrix
 
         public void Awake()
         {
+            Instance = this;
+
             Log.Init(Logger);
+
+            ModConfig.Init();
 
             LoadAssets();
             CloneAssets();
@@ -140,7 +148,6 @@ namespace UmbralMithrix
             leapDef.activationState = new SerializableEntityStateType(typeof(EnterUmbralLeap));
             ultDef.activationState = new SerializableEntityStateType(typeof(EnterUmbralUlt));
 
-            ModConfig.InitConfig(Config);
             CreateDoppelItem();
             AddEntityStates();
             ChangeVanillaEntityStateValues();

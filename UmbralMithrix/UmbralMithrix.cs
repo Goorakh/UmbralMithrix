@@ -161,9 +161,9 @@ namespace UmbralMithrix
 
         private void ChangeVanillaEntityStateValues()
         {
-            SetAddressableEntityStateField("RoR2/Base/Brother/EntityStates.BrotherMonster.FistSlam.asset", "healthCostFraction", "0");
-            SetAddressableEntityStateField("RoR2/Base/Brother/EntityStates.BrotherMonster.SpellChannelEnterState.asset", "duration", "3");
-            SetAddressableEntityStateField("RoR2/Base/Brother/EntityStates.BrotherMonster.SpellChannelState.asset", "maxDuration", "5");
+            SetVanillaEntityStateField(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother_EntityStates_BrotherMonster.FistSlam_asset, "healthCostFraction", "0");
+            SetVanillaEntityStateField(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother_EntityStates_BrotherMonster.SpellChannelEnterState_asset, "duration", "3");
+            SetVanillaEntityStateField(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother_EntityStates_BrotherMonster.SpellChannelState_asset, "maxDuration", "5");
         }
 
         public static void ArenaSetup()
@@ -235,18 +235,20 @@ namespace UmbralMithrix
             ContentAddition.AddItemDef(UmbralItem);
         }
 
-        public static bool SetAddressableEntityStateField(string fullEntityStatePath, string fieldName, string value)
+        public static void SetVanillaEntityStateField(string fullEntityStatePath, string fieldName, string value)
         {
-            EntityStateConfiguration esc = Addressables.LoadAssetAsync<EntityStateConfiguration>(fullEntityStatePath).WaitForCompletion();
-            for (int i = 0; i < esc.serializedFieldsCollection.serializedFields.Length; i++)
+            AssetReferenceT<EntityStateConfiguration> escRef = new AssetReferenceT<EntityStateConfiguration>(fullEntityStatePath);
+            AssetAsyncReferenceManager<EntityStateConfiguration>.LoadAsset(escRef).Completed += (x) =>
             {
-                if (esc.serializedFieldsCollection.serializedFields[i].fieldName == fieldName)
+                EntityStateConfiguration esc = x.Result;
+                for (int i = 0; i < esc.serializedFieldsCollection.serializedFields.Length; i++)
                 {
-                    esc.serializedFieldsCollection.serializedFields[i].fieldValue.stringValue = value;
-                    return true;
+                    if (esc.serializedFieldsCollection.serializedFields[i].fieldName == fieldName)
+                    {
+                        esc.serializedFieldsCollection.serializedFields[i].fieldValue.stringValue = value;
+                    }
                 }
-            }
-            return false;
+            };
         }
 
         private void SetupVoidling()

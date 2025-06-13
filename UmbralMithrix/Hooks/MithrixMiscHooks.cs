@@ -1,8 +1,6 @@
 using EntityStates.BrotherMonster;
 using RoR2;
 using RoR2.CharacterAI;
-using RoR2.Projectile;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 

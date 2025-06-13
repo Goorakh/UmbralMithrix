@@ -4,25 +4,24 @@ using RoR2.Skills;
 using UnityEngine;
 using EntityStates;
 using System.Collections.Generic;
-using EntityStates.BrotherMonster;
 
 namespace UmbralMithrix.EntityStates;
 
 public class ChannelUmbralUlt : BaseState
 {
-    public static GameObject waveProjectileLeftPrefab;
-    public static GameObject waveProjectileRightPrefab;
-    public static int waveProjectileCount;
-    public static float waveProjectileDamageCoefficient;
-    public static float waveProjectileForce;
-    public static int totalWaves;
-    public static float maxDuration;
-    public static GameObject channelBeginMuzzleflashEffectPrefab;
+    public static GameObject waveProjectileLeftPrefab = UmbralMithrix.leftUltLine;
+    public static GameObject waveProjectileRightPrefab = UmbralMithrix.rightUltLine;
+    public static int waveProjectileCount = ModConfig.UltimateWaves.Value;
+    public static float waveProjectileDamageCoefficient = 9f;
+    public static float waveProjectileForce = 300f;
+    public static int totalWaves = ModConfig.UltimateCount.Value;
+    public static float maxDuration = ModConfig.UltimateDuration.Value;
+    public static GameObject channelBeginMuzzleflashEffectPrefab = UmbralMithrix.umbralUltMuzzleFlash;
     public static GameObject channelEffectPrefab;
-    public static string enterSoundString;
-    public static string exitSoundString;
+    public static string enterSoundString = "Play_moonBrother_blueWall_active_loop";
+    public static string exitSoundString = "Stop_moonBrother_blueWall_active_loop";
     private GameObject channelEffectInstance;
-    public static SkillDef replacementSkillDef;
+    public static SkillDef replacementSkillDef = UmbralMithrix.ultDef;
     private int wavesFired;
 
     public override void OnEnter()
@@ -30,9 +29,9 @@ public class ChannelUmbralUlt : BaseState
         base.OnEnter();
         Util.PlaySound(ChannelUmbralUlt.enterSoundString, this.gameObject);
         Transform modelChild = this.FindModelChild("MuzzleUlt");
-        if ((bool)modelChild && (bool)ChannelUmbralUlt.channelEffectPrefab)
-            this.channelEffectInstance = Object.Instantiate<GameObject>(ChannelUmbralUlt.channelEffectPrefab, modelChild.position, Quaternion.identity, modelChild);
-        if (!(bool)ChannelUmbralUlt.channelBeginMuzzleflashEffectPrefab)
+        if (modelChild && ChannelUmbralUlt.channelEffectPrefab)
+            this.channelEffectInstance = Object.Instantiate(ChannelUmbralUlt.channelEffectPrefab, modelChild.position, Quaternion.identity, modelChild);
+        if (!ChannelUmbralUlt.channelBeginMuzzleflashEffectPrefab)
             return;
         EffectManager.SimpleMuzzleFlash(ChannelUmbralUlt.channelBeginMuzzleflashEffectPrefab, this.gameObject, "MuzzleUlt", false);
     }
@@ -82,7 +81,7 @@ public class ChannelUmbralUlt : BaseState
                     for (int index = 0; index < ModConfig.UltimateWaves.Value; ++index)
                     {
                         Vector3 forward = Quaternion.AngleAxis((num + offset) * index, Vector3.up) * vector3;
-                        ProjectileManager.instance.FireProjectile(UmbralMithrix.staticUltLine, points[idx], Util.QuaternionSafeLookRotation(forward), this.gameObject, this.characterBody.damage * UltChannelState.waveProjectileDamageCoefficient, UltChannelState.waveProjectileForce, Util.CheckRoll(this.characterBody.crit, this.characterBody.master));
+                        ProjectileManager.instance.FireProjectile(UmbralMithrix.staticUltLine, points[idx], Util.QuaternionSafeLookRotation(forward), this.gameObject, this.characterBody.damage * ChannelUmbralUlt.waveProjectileDamageCoefficient, ChannelUmbralUlt.waveProjectileForce, Util.CheckRoll(this.characterBody.crit, this.characterBody.master));
                     }
                 }
             }
@@ -109,7 +108,7 @@ public class ChannelUmbralUlt : BaseState
                     for (int index2 = 0; index2 < num1; ++index2)
                     {
                         Vector3 forward = Quaternion.AngleAxis(num2 * index2, Vector3.up) * normalized;
-                        ProjectileManager.instance.FireProjectile(prefab, vector3Array[index1], Util.QuaternionSafeLookRotation(forward), this.gameObject, this.characterBody.damage * UltChannelState.waveProjectileDamageCoefficient, UltChannelState.waveProjectileForce, Util.CheckRoll(this.characterBody.crit, this.characterBody.master));
+                        ProjectileManager.instance.FireProjectile(prefab, vector3Array[index1], Util.QuaternionSafeLookRotation(forward), this.gameObject, this.characterBody.damage * ChannelUmbralUlt.waveProjectileDamageCoefficient, ChannelUmbralUlt.waveProjectileForce, Util.CheckRoll(this.characterBody.crit, this.characterBody.master));
                     }
                 }
             }

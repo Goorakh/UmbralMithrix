@@ -12,6 +12,7 @@ using RoR2.Skills;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UmbralMithrix.EntityStates;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
@@ -122,7 +123,7 @@ namespace UmbralMithrix
         private static SkillDef slamDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/WeaponSlam.asset").WaitForCompletion();
         private static SkillDef bashDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/SprintBash.asset").WaitForCompletion();
         private static SkillDef leapDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/SkyLeap.asset").WaitForCompletion();
-
+        public static SkillDef ultDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/Ult.asset").WaitForCompletion();
 
         public void Awake()
         {
@@ -133,19 +134,20 @@ namespace UmbralMithrix
             SetupVoidling();
 
             // TODO: actually make the skills and do this less lazily
-            shardDef.activationState = new SerializableEntityStateType(typeof(EntityStates.FireUmbralShards));
-            slamDef.activationState = new SerializableEntityStateType(typeof(EntityStates.UmbralHammerSlam));
-            bashDef.activationState = new SerializableEntityStateType(typeof(EntityStates.UmbralBash));
-            leapDef.activationState = new SerializableEntityStateType(typeof(EntityStates.EnterUmbralLeap));
+            shardDef.activationState = new SerializableEntityStateType(typeof(FireUmbralShards));
+            slamDef.activationState = new SerializableEntityStateType(typeof(UmbralHammerSlam));
+            bashDef.activationState = new SerializableEntityStateType(typeof(UmbralBash));
+            leapDef.activationState = new SerializableEntityStateType(typeof(EnterUmbralLeap));
+            ultDef.activationState = new SerializableEntityStateType(typeof(EnterUmbralUlt));
 
             ModConfig.InitConfig(Config);
             CreateDoppelItem();
             AddEntityStates();
             ChangeVanillaEntityStateValues();
 
-            MiscHooks miscHooks = new MiscHooks();
-            MissionHooks missionHooks = new MissionHooks();
-            MithrixMiscHooks mithrixMiscHooks = new MithrixMiscHooks();
+            new MiscHooks();
+            new MissionHooks();
+            new MithrixMiscHooks();
 
             LanguageManager.Register(System.IO.Path.GetDirectoryName(Info.Location));
         }

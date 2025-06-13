@@ -206,126 +206,15 @@ namespace UmbralMithrix
             NetworkServer.Spawn(gameObject1);
         }
 
-        public static void AdjustBaseStats()
-        {
-            CharacterBody component1 = mithrix.GetComponent<CharacterBody>();
-            CharacterDirection component2 = mithrix.GetComponent<CharacterDirection>();
-            CharacterMotor component3 = mithrix.GetComponent<CharacterMotor>();
-            CharacterBody component4 = mithrixGlass.GetComponent<CharacterBody>();
-            CharacterDirection component5 = mithrixGlass.GetComponent<CharacterDirection>();
-            CharacterMotor component6 = mithrixGlass.GetComponent<CharacterMotor>();
-            component3.mass = ModConfig.mass.Value;
-            component3.airControl = ModConfig.aircontrol.Value;
-
-            if (Run.instance && Run.instance.name.Contains("Judgement"))
-            {
-                component4.baseMaxHealth = ModConfig.basehealth.Value * 0.25f;
-                component4.levelMaxHealth = ModConfig.levelhealth.Value * 0.25f;
-            }
-            else
-            {
-                component4.baseMaxHealth = ModConfig.basehealth.Value;
-                component4.levelMaxHealth = ModConfig.levelhealth.Value;
-            }
-
-            component4.baseDamage = ModConfig.basedamage.Value / 2f;
-            component4.levelDamage = ModConfig.leveldamage.Value / 2f;
-            component6.airControl = ModConfig.aircontrol.Value;
-            component5.turnSpeed = ModConfig.turningspeed.Value;
-            component1.baseMaxHealth = ModConfig.basehealth.Value;
-            component1.levelMaxHealth = ModConfig.levelhealth.Value;
-            component1.baseDamage = ModConfig.basedamage.Value;
-            component1.levelDamage = ModConfig.leveldamage.Value;
-            component1.baseAttackSpeed = ModConfig.baseattackspeed.Value;
-            component1.baseMoveSpeed = ModConfig.basespeed.Value;
-            component1.baseAcceleration = ModConfig.acceleration.Value;
-            component1.baseJumpPower = ModConfig.jumpingpower.Value;
-            component2.turnSpeed = ModConfig.turningspeed.Value;
-            component1.baseArmor = ModConfig.basearmor.Value;
-            FireLunarShards.projectilePrefab.GetComponent<ProjectileSteerTowardTarget>().rotationSpeed = ModConfig.ShardHoming.Value;
-            ProjectileDirectionalTargetFinder component7 = FireLunarShards.projectilePrefab.GetComponent<ProjectileDirectionalTargetFinder>();
-            component7.lookRange = ModConfig.ShardRange.Value;
-            component7.lookCone = ModConfig.ShardCone.Value;
-            component7.allowTargetLoss = true;
-            WeaponSlam.duration = 3.5f / ModConfig.baseattackspeed.Value;
-            ExitSkyLeap.waveProjectileCount = ModConfig.JumpWaveCount.Value;
-            UltChannelState.waveProjectileCount = ModConfig.UltimateWaves.Value;
-            UltChannelState.maxDuration = ModConfig.UltimateDuration.Value;
-            UltChannelState.totalWaves = ModConfig.UltimateCount.Value;
-            ExitSkyLeap.cloneDuration = (int)Math.Round((double)ModConfig.SpecialCD.Value);
-        }
-
-        public static void AdjustBaseSkills()
-        {
-            SkillLocator component = mithrix.GetComponent<SkillLocator>();
-            SkillDef skillDef1 = component.primary.skillFamily.variants[0].skillDef;
-            skillDef1.baseRechargeInterval = ModConfig.PrimCD.Value;
-            skillDef1.baseMaxStock = ModConfig.PrimStocks.Value;
-            SkillDef skillDef2 = component.secondary.skillFamily.variants[0].skillDef;
-            skillDef2.baseRechargeInterval = ModConfig.SecCD.Value;
-            skillDef2.baseMaxStock = ModConfig.SecStocks.Value;
-            SkillDef skillDef3 = component.utility.skillFamily.variants[0].skillDef;
-            skillDef3.baseMaxStock = ModConfig.UtilStocks.Value;
-            skillDef3.baseRechargeInterval = ModConfig.UtilCD.Value;
-            SkillDef skillDef4 = component.special.skillFamily.variants[0].skillDef;
-            skillDef4.baseRechargeInterval = ModConfig.SpecialCD.Value;
-            // skillDef4.activationState = PlayerCharacterMasterController.instances.Count > 1 ? new SerializableEntityStateType(typeof(EnterSkyLeap)) : new SerializableEntityStateType(typeof(EnterCrushingLeap));
-        }
-
-        public static void AdjustPhase2Stats()
-        {
-            mithrix.GetComponent<EntityStateMachine>().initialStateType = new SerializableEntityStateType(typeof(SkySpawnState));
-            CharacterBody component1 = mithrix.GetComponent<CharacterBody>();
-            CharacterDirection component2 = mithrix.GetComponent<CharacterDirection>();
-            component1.baseMaxHealth = ModConfig.basehealth.Value * 1.5f;
-            component1.levelMaxHealth = ModConfig.levelhealth.Value * 1.5f;
-            component1.baseMoveSpeed = ModConfig.basespeed.Value;
-            component1.baseAcceleration = ModConfig.acceleration.Value;
-            component1.baseJumpPower = ModConfig.jumpingpower.Value;
-            component2.turnSpeed = ModConfig.turningspeed.Value;
-            WeaponSlam.duration = 3.5f / ModConfig.baseattackspeed.Value;
-        }
-
-        public static void AdjustPhase3Stats()
-        {
-            CharacterBody component1 = mithrix.GetComponent<CharacterBody>();
-            CharacterBody component2 = mithrixHurtP3.GetComponent<CharacterBody>();
-            CharacterDirection component3 = mithrix.GetComponent<CharacterDirection>();
-            component1.baseMaxHealth = ModConfig.basehealth.Value;
-            component1.levelMaxHealth = ModConfig.levelhealth.Value;
-            component1.baseDamage = ModConfig.basedamage.Value;
-            component1.levelDamage = ModConfig.leveldamage.Value;
-            component2.baseMaxHealth = ModConfig.basehealth.Value;
-            component2.levelMaxHealth = ModConfig.levelhealth.Value;
-            component2.baseDamage = ModConfig.basedamage.Value / 2f;
-            component2.levelDamage = ModConfig.leveldamage.Value / 2f;
-            component1.baseMoveSpeed = ModConfig.basespeed.Value;
-            component1.baseAcceleration = ModConfig.acceleration.Value;
-            component1.baseJumpPower = ModConfig.jumpingpower.Value;
-            component3.turnSpeed = ModConfig.turningspeed.Value;
-            WeaponSlam.duration = 3.5f / ModConfig.baseattackspeed.Value;
-            UltChannelState.waveProjectileCount = ModConfig.UltimateWaves.Value;
-            UltChannelState.maxDuration = ModConfig.UltimateDuration.Value;
-        }
-
-        public static void AdjustPhase4Stats()
-        {
-            CharacterBody component = mithrixHurt.GetComponent<CharacterBody>();
-            component.baseDamage = ModConfig.basedamage.Value;
-            component.levelDamage = ModConfig.leveldamage.Value;
-            component.GetComponent<SkillLocator>().primary = new GenericSkill();
-            component.GetComponent<SkillLocator>().secondary = new GenericSkill();
-        }
-
         private void AddEntityStates()
         {
-            ContentAddition.AddEntityState<EntityStates.GlassSpawnState>(out _);
-            ContentAddition.AddEntityState<EntityStates.FireUmbralShards>(out _);
-            ContentAddition.AddEntityState<EntityStates.UmbralHammerSlam>(out _);
-            ContentAddition.AddEntityState<EntityStates.EnterUmbralLeap>(out _);
-            ContentAddition.AddEntityState<EntityStates.HoldUmbralLeap>(out _);
-            ContentAddition.AddEntityState<EntityStates.ExitUmbralLeap>(out _);
-            ContentAddition.AddEntityState<EntityStates.UmbralBash>(out _);
+            ContentAddition.AddEntityState<GlassSpawnState>(out _);
+            ContentAddition.AddEntityState<FireUmbralShards>(out _);
+            ContentAddition.AddEntityState<UmbralHammerSlam>(out _);
+            ContentAddition.AddEntityState<EnterUmbralLeap>(out _);
+            ContentAddition.AddEntityState<HoldUmbralLeap>(out _);
+            ContentAddition.AddEntityState<ExitUmbralLeap>(out _);
+            ContentAddition.AddEntityState<UmbralBash>(out _);
         }
 
         private void CreateDoppelItem()
@@ -439,7 +328,13 @@ namespace UmbralMithrix
                 GameObject result = x.Result;
                 mithrixHurtP3 = PrefabAPI.InstantiateClone(result, "BrotherHurtBodyP3");
                 mithrixHurtP3.GetComponent<EntityStateMachine>().initialStateType = new SerializableEntityStateType(typeof(StaggerEnter));
-                mithrixHurtP3.GetComponent<CharacterBody>().bodyFlags |= CharacterBody.BodyFlags.ImmuneToExecutes;
+                CharacterBody characterBody = mithrixHurtP3.GetComponent<CharacterBody>();
+
+                characterBody.bodyFlags |= CharacterBody.BodyFlags.ImmuneToExecutes;
+                characterBody.baseMaxHealth = ModConfig.basehealth.Value;
+                characterBody.levelMaxHealth = ModConfig.levelhealth.Value;
+                characterBody.baseDamage = ModConfig.basedamage.Value / 2f;
+                characterBody.levelDamage = ModConfig.leveldamage.Value / 2f;
 
                 ContentAddition.AddBody(mithrixHurtP3);
             };
@@ -519,19 +414,78 @@ namespace UmbralMithrix
             AssetAsyncReferenceManager<GameObject>.LoadAsset(bodyRef).Completed += (x) =>
             {
                 mithrix = x.Result;
-                mithrix.GetComponent<CharacterBody>().bodyFlags |= CharacterBody.BodyFlags.ImmuneToExecutes;
+                CharacterBody characterBody = mithrix.GetComponent<CharacterBody>();
+                CharacterDirection characterDirection = mithrix.GetComponent<CharacterDirection>();
+                CharacterMotor characterMotor = mithrix.GetComponent<CharacterMotor>();
+
+                characterBody.bodyFlags |= CharacterBody.BodyFlags.ImmuneToExecutes;
+                characterBody.baseMaxHealth = ModConfig.basehealth.Value;
+                characterBody.levelMaxHealth = ModConfig.levelhealth.Value;
+                characterBody.baseDamage = ModConfig.basedamage.Value;
+                characterBody.levelDamage = ModConfig.leveldamage.Value;
+                characterBody.baseAttackSpeed = ModConfig.baseattackspeed.Value;
+                characterBody.baseMoveSpeed = ModConfig.basespeed.Value;
+                characterBody.baseAcceleration = ModConfig.acceleration.Value;
+                characterBody.baseJumpPower = ModConfig.jumpingpower.Value;
+                characterBody.baseArmor = ModConfig.basearmor.Value;
+
+                characterDirection.turnSpeed = ModConfig.turningspeed.Value;
+
+                characterMotor.mass = ModConfig.mass.Value;
+                characterMotor.airControl = ModConfig.aircontrol.Value;
+
+                SkillLocator skillLocator = mithrix.GetComponent<SkillLocator>();
+                SkillDef skillDef1 = skillLocator.primary.skillFamily.variants[0].skillDef;
+                skillDef1.baseRechargeInterval = ModConfig.PrimCD.Value;
+                skillDef1.baseMaxStock = ModConfig.PrimStocks.Value;
+                SkillDef skillDef2 = skillLocator.secondary.skillFamily.variants[0].skillDef;
+                skillDef2.baseRechargeInterval = ModConfig.SecCD.Value;
+                skillDef2.baseMaxStock = ModConfig.SecStocks.Value;
+                SkillDef skillDef3 = skillLocator.utility.skillFamily.variants[0].skillDef;
+                skillDef3.baseMaxStock = ModConfig.UtilStocks.Value;
+                skillDef3.baseRechargeInterval = ModConfig.UtilCD.Value;
+                SkillDef skillDef4 = skillLocator.special.skillFamily.variants[0].skillDef;
+                skillDef4.baseRechargeInterval = ModConfig.SpecialCD.Value;
             };
             AssetReferenceT<GameObject> bodyHurtRef = new AssetReferenceT<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.BrotherHurtBody_prefab);
             AssetAsyncReferenceManager<GameObject>.LoadAsset(bodyHurtRef).Completed += (x) =>
             {
                 mithrixHurt = x.Result;
                 mithrixHurt.AddComponent<P4Controller>();
+                CharacterBody characterBody = mithrixHurt.GetComponent<CharacterBody>();
+
+                characterBody.baseDamage = ModConfig.basedamage.Value;
+                characterBody.levelDamage = ModConfig.leveldamage.Value;
+                characterBody.GetComponent<SkillLocator>().primary = new GenericSkill();
+                characterBody.GetComponent<SkillLocator>().secondary = new GenericSkill();
             };
             AssetReferenceT<GameObject> glassBodyRef = new AssetReferenceT<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Junk_BrotherGlass.BrotherGlassBody_prefab);
             AssetAsyncReferenceManager<GameObject>.LoadAsset(glassBodyRef).Completed += (x) =>
             {
                 mithrixGlass = x.Result;
                 mithrixGlass.GetComponent<EntityStateMachine>().initialStateType = new SerializableEntityStateType(typeof(EntityStates.GlassSpawnState));
+
+                CharacterBody characterBody = mithrixGlass.GetComponent<CharacterBody>();
+                CharacterDirection characterDirection = mithrixGlass.GetComponent<CharacterDirection>();
+                CharacterMotor characterMotor = mithrixGlass.GetComponent<CharacterMotor>();
+
+                characterBody.baseMaxHealth = ModConfig.basehealth.Value;
+                characterBody.levelMaxHealth = ModConfig.levelhealth.Value;
+
+                characterBody.baseDamage = ModConfig.basedamage.Value / 2f;
+                characterBody.levelDamage = ModConfig.leveldamage.Value / 2f;
+                characterMotor.airControl = ModConfig.aircontrol.Value;
+                characterDirection.turnSpeed = ModConfig.turningspeed.Value;
+            };
+            AssetReferenceT<GameObject> shardRef = new AssetReferenceT<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.LunarShardProjectile_prefab);
+            AssetAsyncReferenceManager<GameObject>.LoadAsset(shardRef).Completed += (x) =>
+            {
+                GameObject shardProjectile = x.Result;
+                shardProjectile.GetComponent<ProjectileSteerTowardTarget>().rotationSpeed = ModConfig.ShardHoming.Value;
+                ProjectileDirectionalTargetFinder component7 = shardProjectile.GetComponent<ProjectileDirectionalTargetFinder>();
+                component7.lookRange = ModConfig.ShardRange.Value;
+                component7.lookCone = ModConfig.ShardCone.Value;
+                component7.allowTargetLoss = true;
             };
 
             AssetReferenceT<SpawnCard> crystalCardRef = new AssetReferenceT<SpawnCard>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_WeeklyRun.bscTimeCrystal_asset);

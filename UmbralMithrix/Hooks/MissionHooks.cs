@@ -1,7 +1,6 @@
 using EntityStates.Missions.BrotherEncounter;
 using RoR2;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace UmbralMithrix
@@ -24,8 +23,6 @@ namespace UmbralMithrix
             UmbralMithrix.p2ThresholdReached = false;
             UmbralMithrix.p3ThresholdReached = false;
             UmbralMithrix.finishedItemSteal = false;
-            UmbralMithrix.AdjustBaseSkills();
-            UmbralMithrix.AdjustBaseStats();
 
             GameObject escapeSequenceController = GameObject.Find("EscapeSequenceController");
             if (escapeSequenceController)
@@ -44,20 +41,17 @@ namespace UmbralMithrix
         private void Phase2OnEnter(On.EntityStates.Missions.BrotherEncounter.Phase2.orig_OnEnter orig, Phase2 self)
         {
             self.KillAllMonsters();
-            UmbralMithrix.AdjustPhase2Stats();
             orig(self);
         }
 
         private void Phase3OnEnter(On.EntityStates.Missions.BrotherEncounter.Phase3.orig_OnEnter orig, Phase3 self)
         {
             self.KillAllMonsters();
-            UmbralMithrix.AdjustPhase3Stats();
             orig(self);
         }
 
         private void Phase4OnEnter(On.EntityStates.Missions.BrotherEncounter.Phase4.orig_OnEnter orig, Phase4 self)
         {
-            UmbralMithrix.AdjustPhase4Stats();
             GameObject gameObject = GameObject.Instantiate(UmbralMithrix.voidling, new Vector3(-88.5f, 520f, -0.3f), Quaternion.identity);
             gameObject.AddComponent<DeathZoneController>();
             gameObject.GetComponent<TeamComponent>().teamIndex = TeamIndex.Monster;
@@ -87,7 +81,7 @@ namespace UmbralMithrix
 
             Transform child1 = self.childLocator.FindChild("ArenaWalls");
 
-            Material material = Addressables.LoadAssetAsync<Material>("RoR2/Base/InvadingDoppelganger/matDoppelganger.mat").WaitForCompletion();
+            Material material = UmbralMithrix.doppelMat;
 
             if (child1)
             {

@@ -13,7 +13,7 @@ public class ExitUmbralLeap : BaseState
     public static float baseDuration = 3f;
     public static string soundString = "_land_impactther_phaseJump_land_impact";
     public static GameObject waveProjectilePrefab = UmbralMithrix.umbralLeapWave;
-    public static int waveProjectileCount = 12;
+    public static int waveProjectileCount = ModConfig.JumpWaveCount.Value;
     public static float waveProjectileDamageCoefficient = 4f;
     public static float waveProjectileForce = 400f;
     // public static SkillDef replacementSkillDef;
@@ -56,7 +56,7 @@ public class ExitUmbralLeap : BaseState
         GenericSkill special = (bool)this.skillLocator ? this.skillLocator.special : null;
         if (!(bool)special)
             return;
-        special.SetSkillOverride(this.outer, UltChannelState.replacementSkillDef, GenericSkill.SkillOverridePriority.Contextual);
+        special.SetSkillOverride(this.outer, ChannelUmbralUlt.replacementSkillDef, GenericSkill.SkillOverridePriority.Contextual);
 
         if (!PhaseCounter.instance || PhaseCounter.instance.phase != 2)
             return;
@@ -65,8 +65,8 @@ public class ExitUmbralLeap : BaseState
         if (!genericSkill)
             return;
 
-        UltChannelState.replacementSkillDef.activationState = new SerializableEntityStateType(typeof(UltEnterState));
-        genericSkill.SetSkillOverride(this.outer, UltChannelState.replacementSkillDef, GenericSkill.SkillOverridePriority.Contextual);
+        ChannelUmbralUlt.replacementSkillDef.activationState = new SerializableEntityStateType(typeof(UltEnterState));
+        genericSkill.SetSkillOverride(this.outer, ChannelUmbralUlt.replacementSkillDef, GenericSkill.SkillOverridePriority.Contextual);
     }
 
     private void FireRingAuthority()

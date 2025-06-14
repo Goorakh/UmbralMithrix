@@ -2,7 +2,7 @@
   "name": "UmbralMithrix",
   "version_number": "2.5.4",
   "website_url": "https://github.com/Nuxlar/UmbralMithrix/issues",
-  "description": "A reworked Mithrix fight. Fixed for SotS Items & Elites patch.",
+  "description": "A reworked Mithrix fight that uses new mechanics. Configurable.",
   "dependencies": [
     "Rune580-Risk_Of_Options-2.8.4",
     "RiskofThunder-R2API_ContentManagement-1.0.10",

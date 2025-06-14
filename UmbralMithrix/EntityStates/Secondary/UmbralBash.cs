@@ -10,23 +10,6 @@ namespace UmbralMithrix.EntityStates;
 public class UmbralBash : BasicMeleeAttack
 {
     public static float durationBeforePriorityReduces = 0.5f;
-    public float baseDuration = 4f;
-    public float damageCoefficient = 2f;
-    public string hitBoxGroupName = "Weapon";
-    public GameObject hitEffectPrefab = UmbralMithrix.umbralSlamHitEffect;
-    public float procCoefficient = 1f;
-    public float pushAwayForce = 6000f;
-    public Vector3 forceVector = new Vector3(0f, 2000f, 0f);
-    public float hitPauseDuration = 0.1f;
-    public GameObject swingEffectPrefab = UmbralMithrix.umbralSwingEffect;
-    public string swingEffectMuzzleString = "MuzzleSprintBash";
-    public string mecanimHitboxActiveParameter = "weapon.hitBoxActive";
-    public float shorthopVelocityFromHit = 0f;
-    public string beginStateSoundString = "Play_moonBrother_swing_horizontal";
-    public float forceForwardVelocity = 1f;
-    public NetworkSoundEventDef impactSound = UmbralMithrix.umbralSlamHitSound;
-    public AnimationCurve forwardVelocityCurve = new SprintBash().forwardVelocityCurve;
-
 
     public override void PlayAnimation()
     {
@@ -35,6 +18,23 @@ public class UmbralBash : BasicMeleeAttack
 
     public override void OnEnter()
     {
+        baseDuration = 4f;
+        damageCoefficient = 2f;
+        hitBoxGroupName = "Weapon";
+        hitEffectPrefab = UmbralMithrix.umbralSlamHitEffect;
+        procCoefficient = 1f;
+        pushAwayForce = 6000f;
+        forceVector = new Vector3(0f, 2000f, 0f);
+        hitPauseDuration = 0.1f;
+        swingEffectPrefab = UmbralMithrix.umbralSwingEffect;
+        swingEffectMuzzleString = "MuzzleSprintBash";
+        mecanimHitboxActiveParameter = "weapon.hitBoxActive";
+        shorthopVelocityFromHit = 0f;
+        beginStateSoundString = "Play_moonBrother_swing_horizontal";
+        forceForwardVelocity = true;
+        impactSound = UmbralMithrix.umbralSlamHitSound;
+        forwardVelocityCurve = new AnimationCurve();
+
         base.OnEnter();
         if (this.isAuthority)
         {

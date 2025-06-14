@@ -26,7 +26,7 @@ namespace UmbralMithrix
         public const string PluginGUID = "com." + PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "Nuxlar";
         public const string PluginName = "UmbralMithrix";
-        public const string PluginVersion = "2.5.3";
+        public const string PluginVersion = "2.5.4";
 
         internal static UmbralMithrix Instance { get; private set; }
 
@@ -108,6 +108,7 @@ namespace UmbralMithrix
         public static GameObject leftUltLine;
         public static GameObject rightUltLine;
         public static GameObject staticUltLine;
+        public static GameObject shardProjectile;
         public static Material preBossMat;
         public static Material arenaWallMat;
         public static Material stealAuraMat;
@@ -119,7 +120,6 @@ namespace UmbralMithrix
         public static GameObject tether;
         public static GameObject voidling;
         public static SpawnCard mithrixHurtP3Card = ScriptableObject.CreateInstance<CharacterSpawnCard>();
-
         // TODO: actually make the skills and do this less lazily
         private static SkillDef shardDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/FireLunarShards.asset").WaitForCompletion();
         private static SkillDef slamDef = Addressables.LoadAssetAsync<SkillDef>("RoR2/Base/Brother/WeaponSlam.asset").WaitForCompletion();
@@ -138,6 +138,12 @@ namespace UmbralMithrix
             LoadAssets();
             CloneAssets();
             SetupVoidling();
+
+            /*
+                Leap indicator not showing up
+                Throne spawn state persisting after P1
+                P3 boost
+            */
 
             // TODO: actually make the skills and do this less lazily
             shardDef.activationState = new SerializableEntityStateType(typeof(FireUmbralShards));
@@ -303,7 +309,7 @@ namespace UmbralMithrix
                 leftUltRotate.fastRotationSpeed = 21f;
                 leftUltRotate.slowRotationSpeed = 21f;
 
-                RotateAroundAxis leftP4Rotate = leftUltLine.GetComponent<RotateAroundAxis>();
+                RotateAroundAxis leftP4Rotate = leftP4Line.GetComponent<RotateAroundAxis>();
                 leftP4Rotate.fastRotationSpeed = 10f;
                 leftP4Rotate.slowRotationSpeed = 10f;
             };
@@ -318,7 +324,7 @@ namespace UmbralMithrix
                 rightUltRotate.fastRotationSpeed = 21f;
                 rightUltRotate.slowRotationSpeed = 21f;
 
-                RotateAroundAxis rightP4Rotate = rightUltLine.GetComponent<RotateAroundAxis>();
+                RotateAroundAxis rightP4Rotate = rightP4Line.GetComponent<RotateAroundAxis>();
                 rightP4Rotate.fastRotationSpeed = 10f;
                 rightP4Rotate.slowRotationSpeed = 10f;
             };
@@ -337,6 +343,13 @@ namespace UmbralMithrix
                 characterBody.levelDamage = ModConfig.leveldamage.Value / 2f;
 
                 ContentAddition.AddBody(mithrixHurtP3);
+
+                mithrixHurt = x.Result;
+                mithrixHurt.AddComponent<P4Controller>();
+                CharacterBody hurtBody = mithrixHurt.GetComponent<CharacterBody>();
+
+                hurtBody.baseDamage = ModConfig.basedamage.Value;
+                hurtBody.levelDamage = ModConfig.leveldamage.Value;
             };
             AssetReferenceT<GameObject> masterP3Ref = new AssetReferenceT<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.BrotherHurtMaster_prefab);
             AssetAsyncReferenceManager<GameObject>.LoadAsset(masterP3Ref).Completed += (x) =>
@@ -447,18 +460,6 @@ namespace UmbralMithrix
                 SkillDef skillDef4 = skillLocator.special.skillFamily.variants[0].skillDef;
                 skillDef4.baseRechargeInterval = ModConfig.SpecialCD.Value;
             };
-            AssetReferenceT<GameObject> bodyHurtRef = new AssetReferenceT<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.BrotherHurtBody_prefab);
-            AssetAsyncReferenceManager<GameObject>.LoadAsset(bodyHurtRef).Completed += (x) =>
-            {
-                mithrixHurt = x.Result;
-                mithrixHurt.AddComponent<P4Controller>();
-                CharacterBody characterBody = mithrixHurt.GetComponent<CharacterBody>();
-
-                characterBody.baseDamage = ModConfig.basedamage.Value;
-                characterBody.levelDamage = ModConfig.leveldamage.Value;
-                characterBody.GetComponent<SkillLocator>().primary = new GenericSkill();
-                characterBody.GetComponent<SkillLocator>().secondary = new GenericSkill();
-            };
             AssetReferenceT<GameObject> glassBodyRef = new AssetReferenceT<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Junk_BrotherGlass.BrotherGlassBody_prefab);
             AssetAsyncReferenceManager<GameObject>.LoadAsset(glassBodyRef).Completed += (x) =>
             {
@@ -476,11 +477,91 @@ namespace UmbralMithrix
                 characterBody.levelDamage = ModConfig.leveldamage.Value / 2f;
                 characterMotor.airControl = ModConfig.aircontrol.Value;
                 characterDirection.turnSpeed = ModConfig.turningspeed.Value;
+
+                // TODO: Fix the glass body properly
+                Transform mdlBrother = mithrixGlass.transform.Find("ModelBase/mdlBrother");
+                GameObject mesh = Addressables.LoadAssetAsync<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.mdlBrother_fbx).WaitForCompletion();
+
+                if (mdlBrother)
+                {
+                    if (mdlBrother.TryGetComponent<ModelSkinController>(out var modelSkinController))
+                    {
+                        UnityEngine.Object.DestroyImmediate(modelSkinController);
+                    }
+                    if (mdlBrother.TryGetComponent<Animator>(out var animator))
+                    {
+                        animator.runtimeAnimatorController = Addressables.LoadAssetAsync<RuntimeAnimatorController>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.animBrother_controller).WaitForCompletion();
+                        animator.avatar = mesh.GetComponent<Animator>().avatar;
+                    }
+                }
+
+                Transform eye = mithrixGlass.transform.Find("ModelBase/mdlBrother/BrotherArmature/ROOT/base/stomach/chest/neck/head/eyeball/BrotherEye");
+                if (eye)
+                {
+                    eye.GetComponent<MeshFilter>().mesh = mesh.transform.Find("BrotherArmature/ROOT/base/stomach/chest/neck/head/eyeball/BrotherEye").GetComponent<MeshFilter>().mesh;
+                    eye.GetComponent<MeshRenderer>().material = Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.matBrotherEye_mat).WaitForCompletion();
+                }
+
+                Transform bodyMesh = mithrixGlass.transform.Find("ModelBase/mdlBrother/BrotherBodyMesh");
+                if (bodyMesh)
+                {
+                    bodyMesh.GetComponent<SkinnedMeshRenderer>().sharedMesh = mesh.transform.Find("BrotherBodyMesh").GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                }
+
+                Transform hammerConcrete = mithrixGlass.transform.Find("ModelBase/mdlBrother/BrotherHammerConcrete");
+                if (hammerConcrete)
+                {
+                    hammerConcrete.GetComponent<SkinnedMeshRenderer>().sharedMesh = mesh.transform.Find("BrotherHammerConcrete").GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                }
+
+                Transform hammerStib = mithrixGlass.transform.Find("ModelBase/mdlBrother/BrotherHammerConcrete/BrotherHammerStib");
+                if (hammerStib)
+                {
+                    SkinnedMeshRenderer hammerStibSMR = hammerStib.GetComponent<SkinnedMeshRenderer>();
+                    hammerStibSMR.sharedMesh = mesh.transform.Find("BrotherHammerConcrete/BrotherHammerStib").GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                    hammerStibSMR.material = Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.matBrotherStib_mat).WaitForCompletion();
+                }
+
+                Transform stibPieces = mithrixGlass.transform.Find("ModelBase/mdlBrother/BrotherStibPieces");
+                if (stibPieces)
+                {
+                    SkinnedMeshRenderer hammerPiecesSMR = stibPieces.GetComponent<SkinnedMeshRenderer>();
+                    hammerPiecesSMR.sharedMesh = mesh.transform.Find("BrotherStibPieces").GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                    hammerPiecesSMR.material = Addressables.LoadAssetAsync<Material>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.matBrotherStib_mat).WaitForCompletion();
+                }
+                /*
+                SkinDef originalSkinDef = AssetAsyncReferenceManager<SkinDef>.LoadAsset(new AssetReferenceT<SkinDef>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.skinBrotherBodyDefault_asset)).WaitForCompletion();
+                SkinDefParams originalParams = AssetAsyncReferenceManager<SkinDefParams>.LoadAsset(new AssetReferenceT<SkinDefParams>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother_skinBrotherBodyDefault.params_asset)).WaitForCompletion();
+                originalSkinDef.skinDefParams = originalParams;
+
+                Transform modelTransform = mithrixGlass.GetComponent<ModelLocator>().modelTransform;
+                DestroyImmediate(modelTransform.GetComponent<ModelSkinController>());
+
+                Material mat = AssetAsyncReferenceManager<Material>.LoadAsset(new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.maBrotherGlassOverlay_mat)).WaitForCompletion();
+                SkinDef newSkinDef = ScriptableObject.CreateInstance<SkinDef>();
+                SkinDefParams newParams = GameObject.Instantiate(originalParams);
+                ModelSkinController msc = modelTransform.gameObject.AddComponent<ModelSkinController>();
+                newSkinDef.skinDefParams = newParams;
+                newSkinDef.skinDefParamsAddress = new AssetReferenceT<SkinDefParams>("");
+                newSkinDef.rootObject = originalSkinDef.rootObject;
+                msc.skins = new SkinDef[1] { newSkinDef };
+                newParams.rendererInfos = HG.ArrayUtils.Clone(originalParams.rendererInfos);
+                newParams.meshReplacements = originalParams.meshReplacements;
+                newParams.projectileGhostReplacements = originalParams.projectileGhostReplacements;
+                newParams.gameObjectActivations = originalParams.gameObjectActivations;
+
+                for (int i = 0; i < newParams.rendererInfos.Length; i++)
+                {
+                    newParams.rendererInfos[i].defaultMaterial = mat;
+                }
+
+                HG.ArrayUtils.ArrayAppend(ref msc.skins, newSkinDef);
+                */
             };
             AssetReferenceT<GameObject> shardRef = new AssetReferenceT<GameObject>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Brother.LunarShardProjectile_prefab);
             AssetAsyncReferenceManager<GameObject>.LoadAsset(shardRef).Completed += (x) =>
             {
-                GameObject shardProjectile = x.Result;
+                shardProjectile = x.Result;
                 shardProjectile.GetComponent<ProjectileSteerTowardTarget>().rotationSpeed = ModConfig.ShardHoming.Value;
                 ProjectileDirectionalTargetFinder component7 = shardProjectile.GetComponent<ProjectileDirectionalTargetFinder>();
                 component7.lookRange = ModConfig.ShardRange.Value;
@@ -507,7 +588,6 @@ namespace UmbralMithrix
             AssetAsyncReferenceManager<Material>.LoadAsset(moonBridgeMatRef).Completed += (x) => moonMat = x.Result;
             AssetReferenceT<Material> doppelMatRef = new AssetReferenceT<Material>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_InvadingDoppelganger.matDoppelganger_mat);
             AssetAsyncReferenceManager<Material>.LoadAsset(doppelMatRef).Completed += (x) => doppelMat = x.Result;
-
             AssetReferenceT<NetworkSoundEventDef> slamSoundRef = new AssetReferenceT<NetworkSoundEventDef>(RoR2BepInExPack.GameAssetPaths.RoR2_Base_Croco.nseAcridBiteHit_asset);
             AssetAsyncReferenceManager<NetworkSoundEventDef>.LoadAsset(slamSoundRef).Completed += (x) => umbralSlamHitSound = x.Result;
 

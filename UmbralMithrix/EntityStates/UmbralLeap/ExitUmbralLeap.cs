@@ -11,7 +11,7 @@ namespace UmbralMithrix.EntityStates;
 public class ExitUmbralLeap : BaseState
 {
     public static float baseDuration = 3f;
-    public static string soundString = "_land_impactther_phaseJump_land_impact";
+    public static string soundString = "Play_moonBrother_phaseJump_land_impact";
     public static GameObject waveProjectilePrefab = UmbralMithrix.umbralLeapWave;
     public static int waveProjectileCount = ModConfig.JumpWaveCount.Value;
     public static float waveProjectileDamageCoefficient = 4f;
@@ -35,7 +35,7 @@ public class ExitUmbralLeap : BaseState
             aimAnimator.enabled = true;
         if (this.isAuthority)
             this.FireRingAuthority();
-        if (!(bool)PhaseCounter.instance || PhaseCounter.instance.phase != 3)
+        if (PhaseCounter.instance && PhaseCounter.instance.phase == 1)
             return;
         /* saving for later
     for (int index = 0; index < ExitUmbralLeap.cloneCount; ++index)
@@ -58,7 +58,7 @@ public class ExitUmbralLeap : BaseState
             return;
         special.SetSkillOverride(this.outer, ChannelUmbralUlt.replacementSkillDef, GenericSkill.SkillOverridePriority.Contextual);
 
-        if (!PhaseCounter.instance || PhaseCounter.instance.phase != 2)
+        if (PhaseCounter.instance && PhaseCounter.instance.phase == 2)
             return;
 
         GenericSkill genericSkill = this.skillLocator ? this.skillLocator.special : null;

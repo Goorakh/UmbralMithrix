@@ -279,6 +279,8 @@ namespace UmbralMithrix
                     body.inventory.GiveItem(UmbralMithrix.UmbralItem);
                     body.AddBuff(RoR2Content.Buffs.Immune);
                     body.inventory.GiveItem(RoR2Content.Items.HealthDecay, 40);
+                    body.GetComponent<SkillLocator>().primary = new GenericSkill();
+                    body.GetComponent<SkillLocator>().secondary = new GenericSkill();
                 }
             }
         }
@@ -378,7 +380,6 @@ namespace UmbralMithrix
             {
                 UmbralMithrix.ArenaSetup();
                 UmbralMithrix.SpawnPracticeModeShrine();
-                UmbralMithrix.mithrix.GetComponent<EntityStateMachine>().initialStateType = new SerializableEntityStateType(typeof(ThroneSpawnState));
             }
         }
 

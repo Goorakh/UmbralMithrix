@@ -32,15 +32,7 @@ public class HoldUmbralLeap : BaseState
         this.originalLayer = this.gameObject.layer;
         this.gameObject.layer = LayerIndex.GetAppropriateFakeLayerForTeam(this.teamComponent.teamIndex).intVal;
         this.characterMotor.Motor.RebuildCollidableLayers();
-        if (!(bool)SceneInfo.instance)
-            return;
-        ChildLocator component = SceneInfo.instance.GetComponent<ChildLocator>();
-        if (!(bool)component)
-            return;
-        Transform child = component.FindChild("CenterOfArena");
-        if (!(bool)child)
-            return;
-        this.characterMotor.Motor.SetPositionAndRotation(child.position, Quaternion.identity);
+
         if (this.isAuthority)
         {
             List<CharacterBody> playerBodies = new();
@@ -53,11 +45,11 @@ public class HoldUmbralLeap : BaseState
                         playerBodies.Add(cb);
                 }
             }
-
+            Debug.LogWarning(playerBodies.Count);
             if (playerBodies.Count > 0)
             {
                 Vector3 target = playerBodies[UnityEngine.Random.Range(0, playerBodies.Count)].footPosition;
-                if (Physics.Raycast(new Ray(target, Vector3.down), out RaycastHit hit, 200f, (int)LayerIndex.world.mask, QueryTriggerInteraction.Ignore))
+                if (Physics.Raycast(new Ray(target, Vector3.down), out RaycastHit hit, 500f, (int)LayerIndex.world.mask, QueryTriggerInteraction.Ignore))
                 {
                     this.characterMotor.Motor.SetPositionAndRotation(hit.point + new Vector3(0, 10, 0), Quaternion.identity);
                 }
@@ -67,13 +59,18 @@ public class HoldUmbralLeap : BaseState
                 }
             }
 
+            Debug.LogWarning(UmbralMithrix.leapIndicatorPrefab);
+            Debug.LogWarning(this.characterBody.footPosition);
+
             GameObject workPls = GameObject.Instantiate(UmbralMithrix.leapIndicatorPrefab, this.characterBody.footPosition, Quaternion.identity);
             float radius = this.characterBody.radius / 2;
             workPls.transform.localScale = new Vector3(radius, radius, radius);
             workPls.AddComponent<SelfDestructController>();
             UmbralMithrix.leapIndicator = workPls;
-            NetworkServer.Spawn(workPls);
+            if (NetworkServer.active)
+                NetworkServer.Spawn(workPls);
         }
+
     }
 
     public override void FixedUpdate()

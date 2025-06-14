@@ -9,7 +9,7 @@ namespace UmbralMithrix.EntityStates
     {
         public static float baseDuration = 0.11f;
         public float damageCoefficient = 0.05f;
-        public static GameObject projectilePrefab;
+        public static GameObject projectilePrefab = UmbralMithrix.shardProjectile;
         public static float recoilAmplitude = 1.5f;
         public static float spreadBloomValue = 0.4f;
         public static string muzzleString = "MuzzleLeft";

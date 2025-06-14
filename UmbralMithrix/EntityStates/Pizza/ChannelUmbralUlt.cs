@@ -46,7 +46,6 @@ public class ChannelUmbralUlt : BaseState
 
         if (PhaseCounter.instance)
         {
-            ChannelUmbralUlt.waveProjectileCount = 0;
             List<CharacterBody> playerBodies = new();
             foreach (CharacterMaster cm in CharacterMaster.readOnlyInstancesList)
             {
@@ -112,17 +111,6 @@ public class ChannelUmbralUlt : BaseState
                     }
                 }
             }
-        }
-
-        normalized = Vector3.ProjectOnPlane(Random.onUnitSphere, Vector3.up).normalized;
-        Vector3 footPosition = this.characterBody.footPosition;
-        prefab = ChannelUmbralUlt.waveProjectileLeftPrefab;
-        if ((double)Random.value <= 0.5)
-            prefab = ChannelUmbralUlt.waveProjectileRightPrefab;
-        for (int index = 0; index < ChannelUmbralUlt.waveProjectileCount; ++index)
-        {
-            Vector3 forward = Quaternion.AngleAxis(num * index, Vector3.up) * normalized;
-            ProjectileManager.instance.FireProjectileWithoutDamageType(prefab, footPosition, Util.QuaternionSafeLookRotation(forward), this.gameObject, this.characterBody.damage * ChannelUmbralUlt.waveProjectileDamageCoefficient, ChannelUmbralUlt.waveProjectileForce, Util.CheckRoll(this.characterBody.crit, this.characterBody.master));
         }
     }
 

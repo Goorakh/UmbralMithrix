@@ -1,3 +1,5 @@
+using EntityStates;
+using EntityStates.BrotherMonster;
 using EntityStates.Missions.BrotherEncounter;
 using RoR2;
 using UnityEngine;
@@ -23,6 +25,7 @@ namespace UmbralMithrix
             UmbralMithrix.p2ThresholdReached = false;
             UmbralMithrix.p3ThresholdReached = false;
             UmbralMithrix.finishedItemSteal = false;
+            UmbralMithrix.mithrix.GetComponent<EntityStateMachine>().initialStateType = new SerializableEntityStateType(typeof(ThroneSpawnState));
 
             GameObject escapeSequenceController = GameObject.Find("EscapeSequenceController");
             if (escapeSequenceController)
@@ -40,6 +43,7 @@ namespace UmbralMithrix
 
         private void Phase2OnEnter(On.EntityStates.Missions.BrotherEncounter.Phase2.orig_OnEnter orig, Phase2 self)
         {
+            UmbralMithrix.mithrix.GetComponent<EntityStateMachine>().initialStateType = new SerializableEntityStateType(typeof(SkySpawnState));
             self.KillAllMonsters();
             orig(self);
         }

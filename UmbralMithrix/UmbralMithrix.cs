@@ -140,9 +140,8 @@ namespace UmbralMithrix
             SetupVoidling();
 
             /*
-                Leap indicator not showing up
-                Throne spawn state persisting after P1
-                P3 boost
+                P2 HP most likely
+                P3 Pizza being vanilla
             */
 
             // TODO: actually make the skills and do this less lazily

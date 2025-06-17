@@ -1,8 +1,12 @@
+`2.5.5`
+
+- Updated for Memory Optimization patch
+
 `2.5.4`
 
 - Major internal code changes (mod should be unchanged functionally)
 - Refactored configs
-- Updated dependenciesAdd commentMore actions
+- Updated dependencies
 
 `2.5.3`
 

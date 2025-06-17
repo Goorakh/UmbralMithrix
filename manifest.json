@@ -1,7 +1,8 @@
 ﻿{
-  "name": "UmbralMithrix",
+  "name": "UmbralMithrixFork",
+  "author": "Gorakh",
   "version_number": "2.5.5",
-  "website_url": "https://github.com/Nuxlar/UmbralMithrix/issues",
+  "website_url": "https://github.com/Goorakh/UmbralMithrix/issues",
   "description": "A reworked Mithrix fight that uses new mechanics. Configurable.",
   "dependencies": [
     "Rune580-Risk_Of_Options-2.8.4",

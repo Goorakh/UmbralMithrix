@@ -1,3 +1,7 @@
+`2.5.6`
+
+- Fixed Phase 3 using vanilla Mithrix pizza attack
+
 `2.5.5`
 
 - Updated for Memory Optimization patch
